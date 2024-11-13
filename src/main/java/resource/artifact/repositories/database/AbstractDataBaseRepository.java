@@ -15,7 +15,7 @@ public class AbstractDataBaseRepository<Id,E extends Entity<Id>> extends InMemor
     //only one connection per project, all objects will use this static value
     protected static Connection dataBaseConnection;
     protected String tableName; //operation will be made on this table
-
+    int testing;
     /**
      * Function with the role to make on single connection in the project threw out all instances of this class
      * @param connectInfo :- struct containing 3 String for connecting to the database
