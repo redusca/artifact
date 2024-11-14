@@ -114,7 +114,7 @@ public abstract class AbstractDataBaseRepository<Id,E extends Entity<Id>> extend
 
     public abstract String updateFormat(E entity);
 
-    public AbstractDataBaseRepository(Validator<E> validator, DataBaseConnectInfo connectInfo,String tableName) {
+    public AbstractDataBaseRepository(Validator<E> validator, DataBaseConnectInfo connectInfo, String tableName) {
         super(validator);
         connect(connectInfo);
         this.tableName = tableName;

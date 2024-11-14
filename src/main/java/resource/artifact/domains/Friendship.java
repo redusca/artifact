@@ -8,17 +8,25 @@ import static java.lang.Math.min;
 /**
  * Class Friendship will always have the fields first and last sorted ascended by value
  */
-public class Friendship extends Tuple<Long, Long> {
+public class Friendship extends Entity<Tuple<Long,Long>> {
     private final LocalDateTime fDate;
 
-
     public Friendship(Long elem1, Long elem2) {
-        super(min(elem1,elem2), max(elem1,elem2));
+
+        setId(new Tuple<Long,Long>(min(elem1,elem2),max(elem1,elem2)));
         this.fDate = LocalDateTime.now();
     }
 
     public LocalDateTime getFDate() {
         return fDate;
+    }
+
+    public Long first(){
+        return getId().first();
+    }
+
+    public Long last(){
+        return getId().last();
     }
 
     @Override

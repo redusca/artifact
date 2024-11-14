@@ -9,7 +9,7 @@ import java.sql.SQLException;
 
 public class UserDBRepository extends AbstractDataBaseRepository<Long,User> {
 
-    public UserDBRepository(Validator<User> validator, DataBaseConnectInfo connectInfo,String tableName) {
+    public UserDBRepository(Validator<User> validator, DataBaseConnectInfo connectInfo, String tableName) {
         super(validator, connectInfo, tableName);
     }
 
