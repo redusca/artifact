@@ -1,7 +1,7 @@
 package resource.artifact.repositories.inMemory;
 
 import resource.artifact.domains.Entity;
-import resource.artifact.domains.Validator.Validator;
+import resource.artifact.domains.validator.Validator;
 import resource.artifact.repositories.Repository;
 
 
@@ -35,6 +35,8 @@ public class InMemoryRepository<Id,E extends Entity<Id>> implements Repository<I
     public Optional<E> save(E entity) {
         if(entity == null)
             throw new IllegalArgumentException("entity is null");
+        if(entities.get(entity.getId()) != null)
+            throw new IllegalArgumentException("entity already exists");
         validator.validate(entity);
         return Optional.ofNullable(entities.put(entity.getId(), entity));
     }

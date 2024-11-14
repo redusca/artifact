@@ -1,4 +1,4 @@
-package resource.artifact.domains.Validator;
+package resource.artifact.domains.validator;
 
 public class ValidationException extends RuntimeException {
     public ValidationException(String message) {

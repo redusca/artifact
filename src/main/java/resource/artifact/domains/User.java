@@ -10,8 +10,7 @@ public class User extends Entity<Long>{
     private String lastName;
     private final List<Long> friends;
 
-    public User(Long aLong,String firstName,String lastName) {
-        super(aLong);
+    public User(String firstName,String lastName) {
         friends = new ArrayList<>();
         this.firstName = firstName;
         this.lastName = lastName;

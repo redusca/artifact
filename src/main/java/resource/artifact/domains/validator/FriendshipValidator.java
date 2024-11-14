@@ -1,4 +1,4 @@
-package resource.artifact.domains.Validator;
+package resource.artifact.domains.validator;
 
 import resource.artifact.domains.Friendship;
 import resource.artifact.domains.User;
