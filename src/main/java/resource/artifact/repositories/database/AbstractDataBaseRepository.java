@@ -131,9 +131,11 @@ public abstract class AbstractDataBaseRepository<Id,E extends Entity<Id>> extend
 
     @Override
     public Optional<E> save(E entity) {
+
         Optional<E> returnObj = super.save(entity);
         if(returnObj.isEmpty())
             RowStatement(entity,RowCase.ADD);
+
         return returnObj;
     }
 

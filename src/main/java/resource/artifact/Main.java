@@ -1,6 +1,7 @@
 package resource.artifact;
 
 import resource.artifact.domains.DataBaseConnectInfo;
+import resource.artifact.domains.User;
 import resource.artifact.domains.validator.FriendshipValidator;
 import resource.artifact.domains.validator.UserValidator;
 import resource.artifact.repositories.database.FriendshipDBRepository;
@@ -21,6 +22,10 @@ public class Main {
 
         userDBRepository.findAll().forEach(System.out::println);
         friendshipDBRepository.findAll().forEach(System.out::println);
+
+        userDBRepository.save(new User("marius","esca"));
+
+        userDBRepository.findAll().forEach(user -> System.out.println(user.getId()));
         //MainApplication.main(args);
     }
 }

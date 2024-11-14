@@ -6,6 +6,8 @@ import resource.artifact.domains.validator.Validator;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Optional;
 
 public class UserDBRepository extends AbstractDataBaseRepository<Long,User> {
 
@@ -39,5 +41,22 @@ public class UserDBRepository extends AbstractDataBaseRepository<Long,User> {
     @Override
     public String updateFormat(User entity) {
         return String.format("Update %s Set nume='%s', prenume='%s' Where id = %d", getTableName(), entity.getFirstName(),entity.getLastName(),entity.getId());
+    }
+
+    @Override
+    public Optional<User> save(User entity) {
+        try{
+            Statement statement;
+            statement = dataBaseConnection.createStatement();
+            String query = "select last_value from public.utilizatori_id_seq";
+            ResultSet resultSet = statement.executeQuery(query);
+            resultSet.next();
+            //got the last id from identity
+            entity.setId(resultSet.getLong("last_value")+1);
+            return super.save(entity);
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
