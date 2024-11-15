@@ -4,7 +4,7 @@ import resource.artifact.domains.DataBaseConnectInfo;
 import resource.artifact.domains.Friendship;
 import resource.artifact.domains.Tuple;
 import resource.artifact.domains.User;
-import resource.artifact.domains.validator.Validator;
+import resource.artifact.domains.validators.Validator;
 import resource.artifact.repositories.inMemory.InMemoryRepository;
 
 import java.sql.ResultSet;
@@ -50,6 +50,7 @@ public class FriendshipDBRepository extends AbstractDataBaseRepository<Tuple<Lon
         return String.format("Delete From %s Where id_low = %d and id_high = %d",getTableName(),entity.first(),entity.last());
     }
 
+    //never called
     @Override
     public String updateFormat(Friendship entity) {
         return "";

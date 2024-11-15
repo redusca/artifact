@@ -12,6 +12,7 @@ module resource.artifact {
     requires com.almasb.fxgl.all;
     requires java.sql;
     requires org.postgresql.jdbc;
+    requires java.desktop;
 
     exports resource.artifact;
     opens resource.artifact to javafx.fxml;

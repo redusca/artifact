@@ -1,7 +1,7 @@
 package resource.artifact.repositories.inMemory;
 
 import resource.artifact.domains.Entity;
-import resource.artifact.domains.validator.Validator;
+import resource.artifact.domains.validators.Validator;
 import resource.artifact.repositories.Repository;
 
 

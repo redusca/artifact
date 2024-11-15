@@ -60,8 +60,8 @@ public interface Repository<ID, E extends Entity<ID>> {
      * @param entity
      *          entity must not be null
      * @return  an {@code Optional}
-     *             - null if the entity was updated
-     *             - otherwise (e.g. id does not exist) returns the entity.
+     *             - null if the entity was not updated
+     *             - if the entity was updated, returns the old entity.
      * @throws IllegalArgumentException
      *             if the given entity is null.
      * //@throws ValidationException

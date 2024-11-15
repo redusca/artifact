@@ -3,7 +3,7 @@ package resource.artifact.repositories.database;
 import resource.artifact.domains.DataBaseConnectInfo;
 import resource.artifact.domains.Entity;
 import resource.artifact.domains.enums.RowCase;
-import resource.artifact.domains.validator.Validator;
+import resource.artifact.domains.validators.Validator;
 import resource.artifact.repositories.inMemory.InMemoryRepository;
 
 import java.sql.*;

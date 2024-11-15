@@ -2,7 +2,7 @@ package resource.artifact.repositories.database;
 
 import resource.artifact.domains.DataBaseConnectInfo;
 import resource.artifact.domains.User;
-import resource.artifact.domains.validator.Validator;
+import resource.artifact.domains.validators.Validator;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
