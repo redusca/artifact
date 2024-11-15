@@ -1,7 +1,6 @@
 package resource.artifact;
 
 import resource.artifact.domains.DataBaseConnectInfo;
-import resource.artifact.domains.User;
 import resource.artifact.domains.validators.FriendshipValidator;
 import resource.artifact.domains.validators.UserValidator;
 import resource.artifact.repositories.database.FriendshipDBRepository;
@@ -9,7 +8,7 @@ import resource.artifact.repositories.database.UserDBRepository;
 import resource.artifact.repositories.inFile.FriendshipIFRepository;
 import resource.artifact.repositories.inFile.UserIFRepository;
 import resource.artifact.services.SocialNetworking;
-import resource.artifact.utils.ComunityStructureUtils;
+import resource.artifact.utils.CommunityStructureUtils;
 
 public class Main {
     public static void main(String[] args) {
@@ -27,7 +26,7 @@ public class Main {
         //Service
         SocialNetworking SN = new SocialNetworking(userDBRepository,friendshipDBRepository);
 
-        //System.out.println(ComunityStructureUtils.NumberOfCommunities(userDBRepository));
+        //System.out.println(CommunityStructureUtils.NumberOfCommunities(userDBRepository));
 
         UserIFRepository userIFRepository = new UserIFRepository(
                 new UserValidator(),"C:\\Users\\redis\\Desktop\\Faculta\\sem3\\MAP\\TemaLab\\data\\user.txt");
@@ -37,7 +36,6 @@ public class Main {
         SocialNetworking SN_file = new SocialNetworking(userIFRepository,friendshipIFRepository);
         SN_file.get_all_users().forEach(System.out::println);
         SN_file.get_all_friendships().forEach(System.out::println);
-
 
         //MainApplication.main(args);
     }

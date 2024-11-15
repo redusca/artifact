@@ -46,11 +46,11 @@ public class SocialNetworking {
 
         //Deleting all friendships
         delValue.ifPresent(user -> user.getFriends().forEach(id_friend -> {
-            usersRepo.findOne(id_friend).get().removeFriend(user.getId());
+            usersRepo.findOne(id_friend).orElse(new User()).removeFriend(user.getId());
             friendshipsRepo.delete(new Friendship(id_friend,delValue.get().getId()).getId());
         }));
 
-        return usersRepo.delete(delValue.get().getId());
+        return usersRepo.delete(delValue.orElse(new User()).getId());
     }
     //3
 
@@ -97,8 +97,8 @@ public class SocialNetworking {
         iDfromStringValidator.validate(id_high);
 
         //adding the friendship in the users lists
-        usersRepo.findOne(Long.parseLong(id_low)).get().addFriend(Long.parseLong(id_high));
-        usersRepo.findOne(Long.parseLong(id_high)).get().addFriend(Long.parseLong(id_low));
+        usersRepo.findOne(Long.parseLong(id_low)).orElse(new User()).addFriend(Long.parseLong(id_high));
+        usersRepo.findOne(Long.parseLong(id_high)).orElse(new User()).addFriend(Long.parseLong(id_low));
 
         return friendshipsRepo.save(new Friendship(Long.parseLong(id_low),Long.parseLong(id_high)));
     }
@@ -120,8 +120,8 @@ public class SocialNetworking {
 
         //remove from both users the friendship
         if(delValue.isPresent()) {
-            usersRepo.findOne(Long.parseLong(id_low)).get().removeFriend(Long.parseLong(id_high));
-            usersRepo.findOne(Long.parseLong(id_high)).get().removeFriend(Long.parseLong(id_low));
+            usersRepo.findOne(Long.parseLong(id_low)).orElse(new User()).removeFriend(Long.parseLong(id_high));
+            usersRepo.findOne(Long.parseLong(id_high)).orElse(new User()).removeFriend(Long.parseLong(id_low));
         }
 
         return delValue;

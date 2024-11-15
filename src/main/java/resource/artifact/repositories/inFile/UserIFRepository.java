@@ -4,7 +4,6 @@ import resource.artifact.domains.User;
 import resource.artifact.domains.validators.IDfromStringValidator;
 import resource.artifact.domains.validators.Validator;
 
-import java.util.Comparator;
 import java.util.Optional;
 
 public class UserIFRepository extends AbstractInFileRepository<Long, User>{

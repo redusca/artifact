@@ -13,7 +13,7 @@ public class Friendship extends Entity<Tuple<Long,Long>> {
 
     public Friendship(Long elem1, Long elem2) {
 
-        setId(new Tuple<Long,Long>(min(elem1,elem2),max(elem1,elem2)));
+        setId(new Tuple<>(min(elem1, elem2), max(elem1, elem2)));
         this.fDate = LocalDateTime.now();
     }
 

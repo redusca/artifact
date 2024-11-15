@@ -48,7 +48,7 @@ public class UserDBRepository extends AbstractDataBaseRepository<Long,User> {
         try{
             Statement statement;
             statement = dataBaseConnection.createStatement();
-            String query = "select last_value from public.utilizatori_id_seq";
+            String query = String.format("select last_value from %s","public.utilizatori_id_seq");
             ResultSet resultSet = statement.executeQuery(query);
             resultSet.next();
             //got the last id from identity

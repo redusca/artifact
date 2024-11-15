@@ -22,12 +22,14 @@ public class FriendshipDBRepository extends AbstractDataBaseRepository<Tuple<Lon
     }
 
     private void postLoad() {
-        findAll().forEach(friendship -> {
-            usersRepo.findOne(friendship.first()).get().addFriend(
-                    usersRepo.findOne(friendship.last()).get().getId());
-            usersRepo.findOne(friendship.last()).get().addFriend(
-                    usersRepo.findOne(friendship.first()).get().getId());
-        });
+        findAll().forEach(this::addBothFriends);
+    }
+
+    private void addBothFriends(Friendship entity) {
+        usersRepo.findOne(entity.first()).orElse(new User()).addFriend(
+                usersRepo.findOne(entity.last()).orElse(new User()).getId());
+        usersRepo.findOne(entity.last()).orElse(new User()).addFriend(
+                usersRepo.findOne(entity.first()).orElse(new User()).getId());
     }
 
     @Override
@@ -58,11 +60,7 @@ public class FriendshipDBRepository extends AbstractDataBaseRepository<Tuple<Lon
 
     @Override
     public Optional<Friendship> save(Friendship entity){
-        usersRepo.findOne(entity.first()).get().addFriend(
-                usersRepo.findOne(entity.last()).get().getId());
-        usersRepo.findOne(entity.last()).get().addFriend(
-                usersRepo.findOne(entity.first()).get().getId());
-
+        addBothFriends(entity);
         return super.save(entity);
     }
 }

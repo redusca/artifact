@@ -16,6 +16,10 @@ public class User extends Entity<Long>{
         this.lastName = lastName;
     }
 
+    public User() {
+        friends = new ArrayList<>();
+    }
+
     //names
     public String getFirstName() {
         return firstName;

@@ -13,7 +13,7 @@ public abstract class AbstractDataBaseRepository<Id,E extends Entity<Id>> extend
     //connection parameters
     //only one connection per project, all objects will use this static value
     protected static Connection dataBaseConnection;
-    private String tableName; //operation will be made on this table
+    private final String tableName; //operation will be made on this table
     /**
      * Function with the role to make on single connection in the project threw out all instances of this class
      * @param connectInfo :- struct containing 3 String for connecting to the database
@@ -119,10 +119,6 @@ public abstract class AbstractDataBaseRepository<Id,E extends Entity<Id>> extend
         connect(connectInfo);
         this.tableName = tableName;
         ReadDataBaseEntries();
-    }
-
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
     }
 
     public String getTableName() {

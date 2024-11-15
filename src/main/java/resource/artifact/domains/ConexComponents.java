@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConexComponents<T> {
-    private List<List<T>> CC;
+    private final List<List<T>> CC;
 
     public ConexComponents(){
-        CC = new ArrayList<List<T>>();
+        CC = new ArrayList<>();
     }
 
     /**
@@ -15,7 +15,7 @@ public class ConexComponents<T> {
      * @param value :first value of the conex component
      */
     public void createConex(T value){
-        List<T> conex = new ArrayList<T>();
+        List<T> conex = new ArrayList<>();
         conex.add(value);
         CC.add(conex);
     }
@@ -34,10 +34,8 @@ public class ConexComponents<T> {
     }
 
     /**
-     * Add the value to the container that have the exsting Value. If the value existing in another component , those two conexComponents will merge
-     * If the existing Value isn't containt , a new conex comp will be made
-     * @param value
-     * @param existingValue
+     * Add the value to the container that have the existing Value. If the value existing in another component , those two conexComponents will merge
+     * If the existing Value isn't contained , a new conex comp will be made
      */
     public void addToConexCompThatHave(T value,T existingValue){
         Integer conexIndex = findValue(existingValue);
@@ -59,7 +57,7 @@ public class ConexComponents<T> {
 
         Integer foundConexIndex = findValue(value);
         if(foundConexIndex != null){
-            if(foundConexIndex != conexIndex) {
+            if(!foundConexIndex.equals(conexIndex)) {
                 CC.get(foundConexIndex).addAll(CC.get(conexIndex));
                 CC.remove(CC.get(conexIndex));
             }

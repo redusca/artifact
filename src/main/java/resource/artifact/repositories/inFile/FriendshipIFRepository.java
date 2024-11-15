@@ -19,10 +19,10 @@ public class FriendshipIFRepository extends AbstractInFileRepository<Tuple<Long,
 
     private void postLoad() {
         findAll().forEach(friendship -> {
-            usersRepo.findOne(friendship.first()).get().addFriend(
-                    usersRepo.findOne(friendship.last()).get().getId());
-            usersRepo.findOne(friendship.last()).get().addFriend(
-                    usersRepo.findOne(friendship.first()).get().getId());
+            usersRepo.findOne(friendship.first()).orElse(new User()).addFriend(
+                    usersRepo.findOne(friendship.last()).orElse(new User()).getId());
+            usersRepo.findOne(friendship.last()).orElse(new User()).addFriend(
+                    usersRepo.findOne(friendship.first()).orElse(new User()).getId());
         });
     }
 
@@ -44,10 +44,10 @@ public class FriendshipIFRepository extends AbstractInFileRepository<Tuple<Long,
 
     @Override
     public Optional<Friendship> save(Friendship entity) {
-        usersRepo.findOne(entity.first()).get().addFriend(
-                usersRepo.findOne(entity.last()).get().getId());
-        usersRepo.findOne(entity.last()).get().addFriend(
-                usersRepo.findOne(entity.first()).get().getId());
+        usersRepo.findOne(entity.first()).orElse(new User()).addFriend(
+                usersRepo.findOne(entity.last()).orElse(new User()).getId());
+        usersRepo.findOne(entity.last()).orElse(new User()).addFriend(
+                usersRepo.findOne(entity.first()).orElse(new User()).getId());
 
         return super.save(entity);
     }
