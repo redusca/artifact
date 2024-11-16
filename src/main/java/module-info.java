@@ -18,7 +18,6 @@ module resource.artifact {
     opens resource.artifact to javafx.fxml;
     exports resource.artifact.controllers;
     opens resource.artifact.controllers to javafx.fxml;
-    //exports resource.artifact.GUI;
-    //opens resource.artifact.GUI to javafx.fxml;
+    exports resource.artifact.domains;
 
 }
