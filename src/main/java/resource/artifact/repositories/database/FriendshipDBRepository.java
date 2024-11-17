@@ -26,10 +26,10 @@ public class FriendshipDBRepository extends AbstractDataBaseRepository<Tuple<Lon
     }
 
     private void addBothFriends(Friendship entity) {
-        usersRepo.findOne(entity.first()).orElse(new User()).addFriend(
-                usersRepo.findOne(entity.last()).orElse(new User()).getId());
-        usersRepo.findOne(entity.last()).orElse(new User()).addFriend(
-                usersRepo.findOne(entity.first()).orElse(new User()).getId());
+        usersRepo.findOne(entity.getFirst()).orElse(new User()).addFriend(
+                usersRepo.findOne(entity.getLast()).orElse(new User()).getId());
+        usersRepo.findOne(entity.getLast()).orElse(new User()).addFriend(
+                usersRepo.findOne(entity.getFirst()).orElse(new User()).getId());
     }
 
     @Override
@@ -44,12 +44,12 @@ public class FriendshipDBRepository extends AbstractDataBaseRepository<Tuple<Lon
 
     @Override
     public String addFormat(Friendship entity) {
-        return String.format("Insert Into %s (id_low,id_high) Values (%d,%d)",getTableName(),entity.first(),entity.last());
+        return String.format("Insert Into %s (id_low,id_high) Values (%d,%d)",getTableName(),entity.getFirst(),entity.getLast());
     }
 
     @Override
     public String delFormat(Friendship entity) {
-        return String.format("Delete From %s Where id_low = %d and id_high = %d",getTableName(),entity.first(),entity.last());
+        return String.format("Delete From %s Where id_low = %d and id_high = %d",getTableName(),entity.getFirst(),entity.getLast());
     }
 
     //never called

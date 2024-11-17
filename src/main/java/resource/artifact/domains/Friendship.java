@@ -1,6 +1,8 @@
 package resource.artifact.domains;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Formatter;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -11,27 +13,29 @@ import static java.lang.Math.min;
 public class Friendship extends Entity<Tuple<Long,Long>> {
     private final LocalDateTime fDate;
 
-    public Friendship(Long elem1, Long elem2) {
 
-        setId(new Tuple<>(min(elem1, elem2), max(elem1, elem2)));
+    public Friendship(Long elem1, Long elem2) {
+        setId(new Tuple<>(min(elem1, elem2),max(elem1, elem2)));
+
         this.fDate = LocalDateTime.now();
     }
 
-    public LocalDateTime getFDate() {
-        return fDate;
+    public String getFDate() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return fDate.format(formatter) ;
     }
 
-    public Long first(){
+    public Long getFirst(){
         return getId().first();
     }
 
-    public Long last(){
+    public Long getLast(){
         return getId().last();
     }
 
     @Override
     public String toString() {
-        return first().toString() + " is friend with " + last().toString();
+        return getFirst().toString() + " is friend with " + getLast().toString();
     }
 
     @Override
@@ -39,7 +43,7 @@ public class Friendship extends Entity<Tuple<Long,Long>> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Friendship that = (Friendship) o;
-        return first().equals(that.first()) && last().equals(that.last());
+        return getFirst().equals(that.getFirst()) && getLast().equals(that.getLast());
     }
 
 }

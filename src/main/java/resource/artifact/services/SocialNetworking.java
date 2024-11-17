@@ -5,14 +5,21 @@ import resource.artifact.domains.Tuple;
 import resource.artifact.domains.User;
 import resource.artifact.domains.validators.IDfromStringValidator;
 import resource.artifact.repositories.inMemory.InMemoryRepository;
+import resource.artifact.utils.events.ChangeEvent;
+import resource.artifact.utils.events.UserOrFriendShipChangeEvent;
+import resource.artifact.utils.observers.Observable;
+import resource.artifact.utils.observers.Observer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 
-public class SocialNetworking {
+public class SocialNetworking implements Observable<UserOrFriendShipChangeEvent>{
     private final InMemoryRepository<Long, User> usersRepo;
     private final InMemoryRepository<Tuple<Long,Long>,Friendship> friendshipsRepo;
     private final IDfromStringValidator iDfromStringValidator;
+    private final List<Observer<UserOrFriendShipChangeEvent>> observers=new ArrayList<>();
 
     public SocialNetworking(InMemoryRepository<Long, User> usersRepo, InMemoryRepository<Tuple<Long, Long>, Friendship> friendshipsRepo) {
         this.usersRepo = usersRepo;
@@ -30,7 +37,10 @@ public class SocialNetworking {
      * @return {@code Optional} :null if the user was added
      */
     public Optional<User> add_user(String nume, String prenume){
-        return usersRepo.save(new User(nume,prenume));
+        User saveValue = new User(nume,prenume);
+        Optional<User> returnValue = usersRepo.save(saveValue);
+        notifyObservers(new UserOrFriendShipChangeEvent(ChangeEvent.ADD,saveValue));
+        return returnValue;
     }
     //2
 
@@ -49,6 +59,7 @@ public class SocialNetworking {
             usersRepo.findOne(id_friend).orElse(new User()).removeFriend(user.getId());
             friendshipsRepo.delete(new Friendship(id_friend,delValue.get().getId()).getId());
         }));
+        notifyObservers(new UserOrFriendShipChangeEvent(ChangeEvent.DELETE,delValue.orElse(new User())));
 
         return usersRepo.delete(delValue.orElse(new User()).getId());
     }
@@ -76,14 +87,6 @@ public class SocialNetworking {
         return usersRepo.update(newValue);
     }
 
-    //4
-    public Iterable<User> get_all_users(){
-        return usersRepo.findAll();
-    }
-
-    //FriendShips operations
-    //1
-
     /**
      * Add a friendship between 2 existing users in repository
      * @param id_low id of first user
@@ -92,7 +95,7 @@ public class SocialNetworking {
      * @throws IllegalArgumentException if the friendship already exist
      * @return {@code Optional} null if it was added
      */
-    public Optional<Friendship> add_friendship(String id_low,String id_high){
+    public Optional<Friendship> add_friendship(String id_low, String id_high){
         iDfromStringValidator.validate(id_low);
         iDfromStringValidator.validate(id_high);
 
@@ -127,8 +130,29 @@ public class SocialNetworking {
         return delValue;
     }
 
+    //4
+    public Iterable<User> get_all_users(){
+        return usersRepo.findAll();
+    }
+
+
     //3
     public Iterable<Friendship> get_all_friendships(){
         return friendshipsRepo.findAll();
+    }
+
+    @Override
+    public void addObserver(Observer<UserOrFriendShipChangeEvent> observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer<UserOrFriendShipChangeEvent> observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers(UserOrFriendShipChangeEvent event) {
+        observers.forEach(observer->observer.update(event));
     }
 }

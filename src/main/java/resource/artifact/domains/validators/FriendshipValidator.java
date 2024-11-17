@@ -17,19 +17,19 @@ public class FriendshipValidator implements Validator<Friendship> {
         String errorString = "ValidationExceptions:\n";
         int nr = errorString.length();
 
-        if(entity.first() == null)
+        if(entity.getFirst() == null)
             errorString += "First Id is required \n";
-        if(entity.last() == null)
+        if(entity.getLast() == null)
             errorString += "Last Id is required \n";
 
-        if(entity.first() <= 0)
+        if(entity.getFirst() <= 0)
             errorString += "First Id must be greater than 0 \n";
-        if(entity.last() <= 0)
+        if(entity.getLast() <= 0)
             errorString += "Last Id must be greater than 0 \n";
 
-        if(repository.findOne(entity.first()).isEmpty())
+        if(repository.findOne(entity.getFirst()).isEmpty())
             errorString += "First Id is not found \n";
-        if(repository.findOne(entity.last()).isEmpty())
+        if(repository.findOne(entity.getLast()).isEmpty())
             errorString += "Last Id is not found \n";
 
         if(nr != errorString.length())

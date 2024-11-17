@@ -5,14 +5,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import resource.artifact.controllers.UserGUIController;
+import resource.artifact.controllers.UsersAdminController;
 import resource.artifact.domains.DataBaseConnectInfo;
 import resource.artifact.domains.validators.FriendshipValidator;
 import resource.artifact.domains.validators.UserValidator;
 import resource.artifact.repositories.database.FriendshipDBRepository;
 import resource.artifact.repositories.database.UserDBRepository;
 import resource.artifact.services.SocialNetworking;
-import resource.artifact.utils.CommunityStructureUtils;
 
 import java.io.IOException;
 
@@ -42,12 +41,12 @@ public class MainApplication extends Application {
     }
 
     private void initView(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("hello-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("userAdmin-view.fxml"));
 
         AnchorPane userLayout = fxmlLoader.load();
         stage.setScene(new Scene(userLayout));
 
-        UserGUIController userController = fxmlLoader.getController();
+        UsersAdminController userController = fxmlLoader.getController();
         userController.setService(userService);
     }
 

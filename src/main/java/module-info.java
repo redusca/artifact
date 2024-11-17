@@ -19,5 +19,14 @@ module resource.artifact {
     exports resource.artifact.controllers;
     opens resource.artifact.controllers to javafx.fxml;
     exports resource.artifact.domains;
+    opens resource.artifact.domains to javafx.fxml;
+    opens resource.artifact.services;
+    exports resource.artifact.services to javafx.fxml;
+    opens resource.artifact.utils.events;
+    exports resource.artifact.utils.events to javafx.fxml;
+    opens resource.artifact.repositories.inMemory;
+    exports resource.artifact.repositories.inMemory to javafx.fxml;
+    opens resource.artifact.utils.observers;
+    exports resource.artifact.utils.observers to java.xml;
 
 }

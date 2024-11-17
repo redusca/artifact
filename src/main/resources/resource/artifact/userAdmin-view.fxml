@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TextField?>
+
+<AnchorPane fx:id="thisAnchorPane" prefHeight="520.0" prefWidth="950.0" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="resource.artifact.controllers.UsersAdminController">
+    <HBox spacing="20.0">
+        <VBox prefHeight="35.0" prefWidth="655.0" spacing="20.0" >
+            <Button text="Friends Table" onAction="#ChangeScene" />
+            <TableView fx:id="tableView" minHeight="-Infinity" minWidth="-Infinity" >
+                <columns>
+                    <TableColumn fx:id="tableColumnFirstName" prefWidth="150.0" text="First Name"/>
+                    <TableColumn fx:id="tableColumnLastName" prefWidth="150.0" text="Last Name"/>
+                </columns>
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                </columnResizePolicy>
+            </TableView>
+        </VBox>
+        <VBox prefHeight="35.0" prefWidth="500.0" spacing="20.0" >
+            <Label text="First Name" />
+            <TextField fx:id="firstNameField" maxWidth="200.0"/>
+            <Label text="Last Name" />
+            <TextField fx:id="lastNameField" maxWidth="200.0"/>
+           <HBox spacing="30.0">
+               <Button text = "Add" onAction="#AddUser"/>
+               <Button text = "Delete" onAction="#DeleteUser"/>
+               <Button text = "Update"/>
+           </HBox>
+        </VBox>
+    </HBox>
+</AnchorPane>
