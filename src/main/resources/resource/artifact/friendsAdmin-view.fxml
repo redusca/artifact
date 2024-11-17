@@ -8,7 +8,7 @@
 
 <AnchorPane fx:id="thisAnchorPane" prefHeight="520.0" prefWidth="950.0" xmlns:fx="http://javafx.com/fxml"
             fx:controller="resource.artifact.controllers.FriendsAdminController">
-    <VBox prefHeight="35.0" prefWidth="655.0" spacing="20.0" >
+    <VBox prefHeight="35.0" prefWidth="655.0" spacing="20.0" layoutX="20.0" layoutY="20.0">
         <Button text="Users Table" onAction="#ChangeScene"/>
         <TableView fx:id="tableView" minHeight="-Infinity" minWidth="-Infinity" >
             <columns>

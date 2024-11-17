@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class SceneSwitch {
-    public SceneSwitch(AnchorPane curentAnchorPane, String fxml, SocialNetworking service) throws IOException{
+    public static void SceneSwitchAction(AnchorPane curentAnchorPane, String fxml, SocialNetworking service) throws IOException{
         FXMLLoader fxmlLoader = new FXMLLoader(Objects.requireNonNull(MainApplication.class.getResource(fxml)));
         AnchorPane nextAnchorPane = fxmlLoader.load();
 

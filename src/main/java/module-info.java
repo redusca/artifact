@@ -13,6 +13,7 @@ module resource.artifact {
     requires java.sql;
     requires org.postgresql.jdbc;
     requires java.desktop;
+    requires com.fasterxml.jackson.core;
 
     exports resource.artifact;
     opens resource.artifact to javafx.fxml;

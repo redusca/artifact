@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class CommunityStructureUtils {
 
@@ -26,6 +27,22 @@ public class CommunityStructureUtils {
     }
 
     public static List<Long> mostSocialCommunity( Repository<Long,User> userRepository) {
-        return null;
+        ConexComponents<Long> CC = new ConexComponents<>();
+
+        userRepository.findAll().forEach(user -> {
+            if(!user.getFriends().isEmpty())
+                user.getFriends().forEach(friendId->CC.addToConexCompThatHave(friendId,user.getId()));
+            else
+                CC.createConex(user.getId());
+        });
+
+        AtomicReference<List<Long>> mostSC = new AtomicReference<>(CC.getCC().getFirst());
+
+        CC.getCC().forEach(conex->{
+            if(conex.size() >= mostSC.get().size())
+                mostSC.set(conex);
+        });
+
+        return mostSC.get();
     }
 }

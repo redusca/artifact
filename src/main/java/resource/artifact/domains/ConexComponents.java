@@ -74,4 +74,8 @@ public class ConexComponents<T> {
     public void printComp(){
         CC.forEach(System.out::println);
     }
+
+    public List<List<T>> getCC(){
+        return CC;
+    }
 }

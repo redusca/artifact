@@ -9,12 +9,10 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import resource.artifact.domains.Friendship;
-import resource.artifact.domains.User;
 import resource.artifact.services.SocialNetworking;
 import resource.artifact.utils.SceneSwitch;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 
 public class FriendsAdminController implements SceneChangerController{
     @FXML
@@ -52,6 +50,6 @@ public class FriendsAdminController implements SceneChangerController{
 
     @Override
     public void ChangeScene(ActionEvent actionEvent) throws IOException {
-        new SceneSwitch(thisAnchorPane,"userAdmin-view.fxml",service);
+         SceneSwitch.SceneSwitchAction(thisAnchorPane,"userAdmin-view.fxml",service);
     }
 }

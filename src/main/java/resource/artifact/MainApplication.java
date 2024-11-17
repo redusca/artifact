@@ -4,7 +4,9 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import resource.artifact.controllers.UserLoginController;
 import resource.artifact.controllers.UsersAdminController;
 import resource.artifact.domains.DataBaseConnectInfo;
 import resource.artifact.domains.validators.FriendshipValidator;
@@ -35,18 +37,19 @@ public class MainApplication extends Application {
         userService = new SocialNetworking(userDBRepository,friendshipDBRepository);
 
         initView(stage);
-        stage.setTitle("Social Network");
+        stage.setTitle("Login Page");
         stage.show();
 
     }
 
     private void initView(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("userAdmin-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("userLogin-view.fxml"));
 
-        AnchorPane userLayout = fxmlLoader.load();
+        StackPane userLayout = fxmlLoader.load();
         stage.setScene(new Scene(userLayout));
+        stage.setResizable(false);
 
-        UsersAdminController userController = fxmlLoader.getController();
+        UserLoginController userController = fxmlLoader.getController();
         userController.setService(userService);
     }
 

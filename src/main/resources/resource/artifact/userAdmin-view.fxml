@@ -10,9 +10,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.TextField?>
 
-<AnchorPane fx:id="thisAnchorPane" prefHeight="520.0" prefWidth="950.0" xmlns:fx="http://javafx.com/fxml"
+<AnchorPane fx:id="thisAnchorPane" prefHeight="520.0" prefWidth="650.0" xmlns:fx="http://javafx.com/fxml"
             fx:controller="resource.artifact.controllers.UsersAdminController">
-    <HBox spacing="20.0">
+    <HBox spacing="20.0" layoutX="20.0" layoutY="20.0">
         <VBox prefHeight="35.0" prefWidth="655.0" spacing="20.0" >
             <Button text="Friends Table" onAction="#ChangeScene" />
             <TableView fx:id="tableView" minHeight="-Infinity" minWidth="-Infinity" >
@@ -25,7 +25,7 @@
                 </columnResizePolicy>
             </TableView>
         </VBox>
-        <VBox prefHeight="35.0" prefWidth="500.0" spacing="20.0" >
+        <VBox prefHeight="35.0" prefWidth="300.0" spacing="20.0" >
             <Label text="First Name" />
             <TextField fx:id="firstNameField" maxWidth="200.0"/>
             <Label text="Last Name" />
