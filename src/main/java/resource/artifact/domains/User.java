@@ -51,6 +51,8 @@ public class User extends Entity<Long>{
         return friends;
     }
     public void addFriend(Long aLong) {
+        if(friends.contains(aLong))
+            return;
         friends.add(aLong);
     }
     public void removeFriend(Long aLong) {
@@ -63,7 +65,7 @@ public class User extends Entity<Long>{
     //override
     @Override
     public String toString() {
-        return username + " " + firstName + " " + lastName;
+        return firstName + " " + lastName;
     }
     @Override
     public boolean equals(Object o) {

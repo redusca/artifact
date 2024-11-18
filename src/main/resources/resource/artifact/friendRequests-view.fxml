@@ -8,9 +8,10 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="resource.artifact.controllers.user.UserAccController">
-    <VBox spacing="20.0" AnchorPane.topAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.bottomAnchor="20.0">
-        <Label fx:id="usernameLabel" alignment="CENTER"/>
+            fx:controller="resource.artifact.controllers.user.UserFriendRequests"
+            prefHeight="400.0" prefWidth="600.0">
+    <VBox spacing="20.0" AnchorPane.topAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.bottomAnchor="20.0" >
+        <Label text="Friend Requests" />
         <TableView fx:id="tableView"  minHeight="-Infinity" minWidth="-Infinity" maxWidth="1000.0" maxHeight="1500.0">
             <columns>
                 <TableColumn fx:id="tableColumnUsername" prefWidth="150.0" text="Username"/>
@@ -21,10 +22,5 @@
                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
             </columnResizePolicy>
         </TableView>
-        <HBox spacing="20.0" >
-            <Button text="Send Friend Request" onAction="#sendFriendRequest"/>
-            <Button text="Delete Friendship" onAction="#deleteFriendship"/>
-            <Button text="Show Friend Requests" onAction="#showFriendRequests"/>
-        </HBox>
     </VBox>
 </AnchorPane>

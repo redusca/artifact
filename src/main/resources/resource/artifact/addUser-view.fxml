@@ -6,7 +6,7 @@
 <StackPane fx:id="stackPane"
         xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="resource.artifact.controllers.AddUserController">
+            fx:controller="resource.artifact.controllers.admin.AddUserController">
     <VBox spacing="20.0" alignment="CENTER" layoutX="20.0" layoutY="20.0">
         <Label text="First name:" alignment="CENTER"/>
         <TextField fx:id="UsernameField" maxWidth="200" alignment="CENTER"/>

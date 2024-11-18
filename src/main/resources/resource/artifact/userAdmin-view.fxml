@@ -11,7 +11,7 @@
 <?import javafx.scene.control.TextField?>
 
 <AnchorPane fx:id="thisAnchorPane" prefHeight="520.0" prefWidth="650.0" xmlns:fx="http://javafx.com/fxml"
-            fx:controller="resource.artifact.controllers.UsersAdminController">
+            fx:controller="resource.artifact.controllers.admin.UsersAdminController">
     <HBox spacing="20.0" layoutX="20.0" layoutY="20.0">
         <VBox prefHeight="35.0" prefWidth="655.0" spacing="20.0" >
             <Button text="Friends Table" onAction="#ChangeScene" />

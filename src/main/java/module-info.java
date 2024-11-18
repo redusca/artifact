@@ -31,5 +31,11 @@ module resource.artifact {
     exports resource.artifact.utils.observers to java.xml;
     opens resource.artifact.repositories;
     exports resource.artifact.repositories to java.xml;
+    exports resource.artifact.controllers.admin;
+    opens resource.artifact.controllers.admin to javafx.fxml;
+    exports resource.artifact.controllers.user;
+    opens resource.artifact.controllers.user to javafx.fxml;
+    exports resource.artifact.controllers.login;
+    opens resource.artifact.controllers.login to javafx.fxml;
 
 }

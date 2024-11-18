@@ -1,13 +1,10 @@
-package resource.artifact.controllers;
+package resource.artifact.controllers.admin;
 
-import com.fasterxml.jackson.core.json.DupDetector;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import resource.artifact.domains.User;
 import resource.artifact.domains.validators.ValidationException;
 import resource.artifact.services.SocialNetworking;
 import javafx.event.ActionEvent;
@@ -38,6 +35,7 @@ public class AddUserController {
                     PasswordField.getText(),UsernameField.getText());
             Stage stage = (Stage) stackPane.getScene().getWindow();
             stage.close();
+
         } catch (ValidationException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Validation Error");

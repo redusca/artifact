@@ -1,5 +1,8 @@
 package resource.artifact.domains;
 
+import resource.artifact.utils.DateTimeFormat;
+
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Formatter;
@@ -11,6 +14,7 @@ import static java.lang.Math.min;
  * Class Friendship will always have the fields first and last sorted ascended by value
  */
 public class Friendship extends Entity<Tuple<Long,Long>> {
+
     private final LocalDateTime fDate;
 
 
@@ -19,10 +23,14 @@ public class Friendship extends Entity<Tuple<Long,Long>> {
 
         this.fDate = LocalDateTime.now();
     }
+    public Friendship(Long elem1, Long elem2,LocalDateTime date) {
+        setId(new Tuple<>(min(elem1, elem2),max(elem1, elem2)));
+
+        this.fDate = date;
+    }
 
     public String getFDate() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        return fDate.format(formatter) ;
+        return fDate.format(DateTimeFormat.DATE_TIME_FORMATTER) ;
     }
 
     public Long getFirst(){

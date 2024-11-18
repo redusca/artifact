@@ -5,10 +5,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import resource.artifact.controllers.UserLoginController;
+import resource.artifact.controllers.login.UserLoginController;
 import resource.artifact.domains.DataBaseConnectInfo;
+import resource.artifact.domains.validators.FriendRequestValidator;
 import resource.artifact.domains.validators.FriendshipValidator;
 import resource.artifact.domains.validators.UserValidator;
+import resource.artifact.repositories.database.FriendRequestDBRepository;
 import resource.artifact.repositories.database.FriendshipDBRepository;
 import resource.artifact.repositories.database.UserDBRepository;
 import resource.artifact.services.SocialNetworking;
@@ -31,13 +33,16 @@ public class MainApplication extends Application {
                 userDBRepository, new FriendshipValidator(userDBRepository),
                 infoConnect , "friendships"
         );
-        //Service
-        userService = new SocialNetworking(userDBRepository,friendshipDBRepository);
+        FriendRequestDBRepository friendRequestDBRepository =new FriendRequestDBRepository(
+                new FriendRequestValidator(userDBRepository),infoConnect,"friendrequests"
+        );
 
+        //Service
+        userService = new SocialNetworking(userDBRepository,friendshipDBRepository,friendRequestDBRepository);
+        userService.get_all_friendrequests_of_user(userDBRepository.findOne(1L).get()).forEach(System.out::println);
         initView(stage);
         stage.setTitle("Login Page");
         stage.show();
-
     }
 
     private void initView(Stage stage) throws IOException {

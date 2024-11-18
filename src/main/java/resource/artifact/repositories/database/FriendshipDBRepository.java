@@ -6,9 +6,12 @@ import resource.artifact.domains.Tuple;
 import resource.artifact.domains.User;
 import resource.artifact.domains.validators.Validator;
 import resource.artifact.repositories.inMemory.InMemoryRepository;
+import resource.artifact.utils.DateTimeFormat;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public class FriendshipDBRepository extends AbstractDataBaseRepository<Tuple<Long,Long>, Friendship>{
@@ -36,7 +39,8 @@ public class FriendshipDBRepository extends AbstractDataBaseRepository<Tuple<Lon
     @Override
     public Friendship createEntity(ResultSet resultSet) {
         try {
-            return new Friendship(resultSet.getLong("id_low"), resultSet.getLong("id_high"));
+            LocalDateTime date = LocalDateTime.parse(resultSet.getString("date"), DateTimeFormat.DATE_TIME_FORMATTER);
+            return new Friendship(resultSet.getLong("id_low"), resultSet.getLong("id_high"),date);
         }
         catch (SQLException e) {
             throw new RuntimeException(e.getMessage());
@@ -45,7 +49,7 @@ public class FriendshipDBRepository extends AbstractDataBaseRepository<Tuple<Lon
 
     @Override
     public String addFormat(Friendship entity) {
-        return String.format("Insert Into %s (id_low,id_high) Values (%d,%d)",getTableName(),entity.getFirst(),entity.getLast());
+        return String.format("Insert Into %s (id_low,id_high,date) Values (%d,%d,'%s')",getTableName(),entity.getFirst(),entity.getLast(),entity.getFDate());
     }
 
     @Override

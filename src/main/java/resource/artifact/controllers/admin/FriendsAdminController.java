@@ -1,4 +1,4 @@
-package resource.artifact.controllers;
+package resource.artifact.controllers.admin;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,6 +9,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import resource.artifact.controllers.SceneChangerController;
 import resource.artifact.domains.Friendship;
 import resource.artifact.domains.Tuple;
 import resource.artifact.domains.validators.ValidationException;
@@ -17,7 +18,6 @@ import resource.artifact.utils.events.AccountEvent;
 import resource.artifact.utils.events.ChangeEvent;
 import resource.artifact.utils.fx.AlterCreator;
 import resource.artifact.utils.fx.SceneSwitch;
-import resource.artifact.utils.observers.Observable;
 import resource.artifact.utils.observers.Observer;
 
 import java.io.IOException;
@@ -75,5 +75,7 @@ public class FriendsAdminController implements SceneChangerController, Observer<
     public void update(AccountEvent actionEvent) {
         if(actionEvent.getEvent() == ChangeEvent.REMOVED_FRIENDSHIP)
             model.remove(actionEvent.getFriendship());
+        if(actionEvent.getEvent() == ChangeEvent.ADD_FRIENDSHIP)
+            model.add(actionEvent.getFriendship());
     }
 }

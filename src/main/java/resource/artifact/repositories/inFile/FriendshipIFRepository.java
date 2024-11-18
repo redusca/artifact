@@ -6,7 +6,9 @@ import resource.artifact.domains.User;
 import resource.artifact.domains.validators.IDfromStringValidator;
 import resource.artifact.domains.validators.Validator;
 import resource.artifact.repositories.Repository;
+import resource.artifact.utils.DateTimeFormat;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public class FriendshipIFRepository extends AbstractInFileRepository<Tuple<Long,Long>, Friendship> {
@@ -30,19 +32,21 @@ public class FriendshipIFRepository extends AbstractInFileRepository<Tuple<Long,
     public Friendship createEntity(String line) {
         String[] friendshipValues = line.split(";");
 
-        if(friendshipValues.length != 2)
+        if(friendshipValues.length != 3)
             throw new IllegalArgumentException("The format is invalid for Friendship!");
 
         IDfromStringValidator IDValidator= new IDfromStringValidator();
         IDValidator.validate(friendshipValues[0]);
         IDValidator.validate(friendshipValues[1]);
 
-        return new Friendship(Long.parseLong(friendshipValues[0]),Long.parseLong(friendshipValues[1]));
+        LocalDateTime date = LocalDateTime.parse(friendshipValues[2], DateTimeFormat.DATE_TIME_FORMATTER);
+
+        return new Friendship(Long.parseLong(friendshipValues[0]),Long.parseLong(friendshipValues[1]),date);
     }
 
     @Override
     public String saveEntity(Friendship entity) {
-        return entity.getFirst() + ";" + entity.getLast();
+        return entity.getFirst() + ";" + entity.getLast() + ";" + entity.getFDate();
     }
 
     @Override

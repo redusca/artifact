@@ -1,4 +1,4 @@
-package resource.artifact.controllers;
+package resource.artifact.controllers.login;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,13 +10,18 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import resource.artifact.MainApplication;
+import resource.artifact.controllers.SceneChangerController;
+import resource.artifact.controllers.admin.UsersAdminController;
+import resource.artifact.controllers.user.UserAccController;
+import resource.artifact.domains.User;
 import resource.artifact.services.SocialNetworking;
 import resource.artifact.utils.fx.AlterCreator;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 
-public class UserLoginController implements SceneChangerController{
+public class UserLoginController implements SceneChangerController {
     @FXML
     private TextField usernameField;
     private SocialNetworking service;
@@ -34,19 +39,21 @@ public class UserLoginController implements SceneChangerController{
 
     @FXML
     private void LoginAction(ActionEvent actionEvent) throws  IOException{
-        if(Objects.equals(usernameField.getText(), "andrei")){
+        Optional<User> loginUser = service.find_by_Username_User(usernameField.getText());
+        if(loginUser.isPresent()){
             FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("userAcc-view.fxml"));
             Stage stage = new Stage();
-            AnchorPane userLayout = fxmlLoader.load();
+            Pane userLayout = fxmlLoader.load();
             stage.setScene(new Scene(userLayout));
 
             UserAccController userController = fxmlLoader.getController();
             userController.setService(service);
+            userController.setUser(loginUser.get());
 
-            stage.setTitle("andrei account");
+            stage.setTitle(usernameField.getText() + " account");
             stage.show();
-            stage = (Stage) thisPane.getScene().getWindow();
-            stage.close();
+          //stage = (Stage) thisPane.getScene().getWindow();
+          //stage.close();
             return;
 
         }
@@ -70,8 +77,6 @@ public class UserLoginController implements SceneChangerController{
         stage.setTitle("Admin Panel");
         stage.show();
 
-        stage = (Stage) thisPane.getScene().getWindow();
-        stage.close();
 
     }
 }

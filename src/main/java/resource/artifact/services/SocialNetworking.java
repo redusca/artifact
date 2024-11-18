@@ -1,5 +1,6 @@
 package resource.artifact.services;
 
+import resource.artifact.domains.FriendRequest;
 import resource.artifact.domains.Friendship;
 import resource.artifact.domains.Tuple;
 import resource.artifact.domains.User;
@@ -11,10 +12,12 @@ import resource.artifact.utils.events.ChangeEvent;
 import resource.artifact.utils.observers.Observable;
 import resource.artifact.utils.observers.Observer;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static java.lang.Long.parseLong;
 
@@ -24,10 +27,13 @@ public class SocialNetworking implements Observable<AccountEvent>{
     private final InMemoryRepository<Tuple<Long,Long>,Friendship> friendshipsRepo;
     private final IDfromStringValidator iDfromStringValidator;
     private final List<Observer<AccountEvent>> observers=new ArrayList<>();
+    private final InMemoryRepository<Tuple<Long, Long>, FriendRequest> friendRequestRepo;
 
-    public SocialNetworking(InMemoryRepository<Long, User> usersRepo, InMemoryRepository<Tuple<Long, Long>, Friendship> friendshipsRepo) {
+    public SocialNetworking(InMemoryRepository<Long, User> usersRepo, InMemoryRepository<Tuple<Long, Long>, Friendship> friendshipsRepo,
+    InMemoryRepository<Tuple<Long, Long>, FriendRequest> friendRequestRepo) {
         this.usersRepo = usersRepo;
         this.friendshipsRepo = friendshipsRepo;
+        this.friendRequestRepo = friendRequestRepo;
         iDfromStringValidator = new IDfromStringValidator();
     }
     //Users operations
@@ -35,7 +41,7 @@ public class SocialNetworking implements Observable<AccountEvent>{
 
     /**
      * Creation and Adding of a user to the repository
-     * @throws resource.artifact.domains.validators.ValidationException : if the names are faulty values like null or empty strings or the username is already taken
+     * @throws ValidationException : if the names are faulty values like null or empty strings or the username is already taken
      * @return {@code Optional} :null if the user was added
      */
     public Optional<User> add_user(String username,String password,String nume, String prenume){
@@ -53,12 +59,12 @@ public class SocialNetworking implements Observable<AccountEvent>{
 
     /**
      * Delete a user and all of his friendships with other users
-     * @throws resource.artifact.domains.validators.ValidationException if the id is incorrect
+     * @throws ValidationException if the id is incorrect
      * @return  {@code Optional} : deleted user or nothing if the id doesn't appear in repository
      */
     public Optional<User> delete_user(String id){
         iDfromStringValidator.validate(id);
-        Optional<User> delValue = usersRepo.findOne(Long.parseLong(id));
+        Optional<User> delValue = usersRepo.findOne(parseLong(id));
 
         //Deleting all friendships
         delValue.ifPresent(user -> user.getFriends().forEach(id_friend -> {
@@ -75,19 +81,19 @@ public class SocialNetworking implements Observable<AccountEvent>{
     /**
      * Update the user at id with a new first and last name
      * @param id  id of the updated user.
-     * @throws resource.artifact.domains.validators.ValidationException if the id or names are find by the validator incorrect
+     * @throws ValidationException if the id or names are find by the validator incorrect
      * @return {@code Optional} of old Value is updated or null if the id is not found in the repository
      */
     public Optional<User> update_user(String id,String nume ,String prenume,String password,String username){
         iDfromStringValidator.validate(id);
 
-        Optional<User> oldValue = usersRepo.findOne(Long.parseLong(id));
+        Optional<User> oldValue = usersRepo.findOne(parseLong(id));
 
         if(oldValue.isEmpty())
             return Optional.empty();
 
         User newValue = new User(nume,prenume,password,username);
-        newValue.setId(Long.parseLong(id));
+        newValue.setId(parseLong(id));
 
         notifyObservers(new AccountEvent(ChangeEvent.UPDATE,newValue,oldValue.orElse(new User())));
 
@@ -102,7 +108,7 @@ public class SocialNetworking implements Observable<AccountEvent>{
      * Add a friendship between 2 existing users in repository
      * @param id_low id of first user
      * @param id_high id of second user
-     * @throws resource.artifact.domains.validators.ValidationException if the ids don't match an existing id in the repository
+     * @throws ValidationException if the ids don't match an existing id in the repository
      * @throws IllegalArgumentException if the friendship already exist
      * @return {@code Optional} null if it was added
      */
@@ -111,10 +117,15 @@ public class SocialNetworking implements Observable<AccountEvent>{
         iDfromStringValidator.validate(id_high);
 
         //adding the friendship in the users lists
-        usersRepo.findOne(Long.parseLong(id_low)).orElse(new User()).addFriend(Long.parseLong(id_high));
-        usersRepo.findOne(Long.parseLong(id_high)).orElse(new User()).addFriend(Long.parseLong(id_low));
+        usersRepo.findOne(parseLong(id_low)).orElse(new User()).addFriend(parseLong(id_high));
+        usersRepo.findOne(parseLong(id_high)).orElse(new User()).addFriend(parseLong(id_low));
 
-        return friendshipsRepo.save(new Friendship(Long.parseLong(id_low),Long.parseLong(id_high)));
+        Optional<Friendship> returnValue = friendshipsRepo.save(new Friendship(parseLong(id_low), parseLong(id_high)));
+        if(returnValue.isEmpty())
+            notifyObservers(new AccountEvent(ChangeEvent.ADD_FRIENDSHIP,
+                    friendshipsRepo.findOne(new Tuple<>(parseLong(id_low),parseLong(id_high))).orElse(new Friendship(0L,0L))));
+
+        return returnValue;
     }
     //2
 
@@ -122,7 +133,7 @@ public class SocialNetworking implements Observable<AccountEvent>{
      * Delete a friendship between 2 users in repository
      * @param id_low id of first user
      * @param id_high id of last user
-     * @throws resource.artifact.domains.validators.ValidationException if the ids don't match a number format
+     * @throws ValidationException if the ids don't match a number format
      * @return {@code Optional} the delete value or null if the pair of ids doesn't exist in repository
      */
     public Optional<Friendship> del_friendship(String id_low,String id_high){
@@ -130,14 +141,13 @@ public class SocialNetworking implements Observable<AccountEvent>{
         iDfromStringValidator.validate(id_high);
 
         Optional<Friendship> delValue = friendshipsRepo.delete(
-                new Friendship(Long.parseLong(id_low),Long.parseLong(id_high)).getId());
+                new Friendship(parseLong(id_low), parseLong(id_high)).getId());
 
         //remove from both users the friendship
         if(delValue.isPresent()) {
-            usersRepo.findOne(Long.parseLong(id_low)).orElse(new User()).removeFriend(Long.parseLong(id_high));
-            usersRepo.findOne(Long.parseLong(id_high)).orElse(new User()).removeFriend(Long.parseLong(id_low));
+            usersRepo.findOne(parseLong(id_low)).orElse(new User()).removeFriend(parseLong(id_high));
+            usersRepo.findOne(parseLong(id_high)).orElse(new User()).removeFriend(parseLong(id_low));
         }
-
         notifyObservers(new AccountEvent(ChangeEvent.REMOVED_FRIENDSHIP,delValue.orElse(new Friendship(0L,0L))));
         return delValue;
     }
@@ -184,4 +194,63 @@ public class SocialNetworking implements Observable<AccountEvent>{
         return Optional.empty();
     }
 
+    public Iterable<User> get_all_friends_of_User(String id) {
+        iDfromStringValidator.validate(id);
+        List<User> friendList = new ArrayList<>();
+        Optional<User> user = usersRepo.findOne(parseLong(id));
+        if(user.isPresent())
+            for(Long id_friend : user.get().getFriends())
+                friendList.add(usersRepo.findOne(id_friend).orElse(new User()));
+
+        return friendList;
+    }
+
+    public List<User> get_non_friend_of_user(User mainUser) {
+        List<User> returnList = new ArrayList<>();
+        for(User  user: get_all_users()){
+            if(user!=mainUser && !mainUser.getFriends().contains(user.getId()))
+                returnList.add(user);
+        }
+        return returnList;
+    }
+
+    public boolean send_friendRequest(String id_sender, String id_receiver) {
+        iDfromStringValidator.validate(id_sender);
+        iDfromStringValidator.validate(id_receiver);
+
+        friendRequestRepo.save(new FriendRequest(parseLong(id_sender),parseLong(id_receiver), LocalDateTime.now()));
+        notifyObservers(new AccountEvent(ChangeEvent.SEND_FRIENDREQUEST,
+                usersRepo.findOne(parseLong(id_sender)).orElse(new User())));
+        return true;
+    }
+
+    public Iterable<FriendRequest> get_all_friendrequests(){
+        return friendRequestRepo.findAll();
+    }
+
+    public boolean friendRequestExists(String id, String id_friend){
+        iDfromStringValidator.validate(id);
+        iDfromStringValidator.validate(id_friend);
+        return friendRequestRepo.findOne(new Tuple<>(parseLong(id),parseLong(id_friend))).isPresent() ||
+                friendRequestRepo.findOne(new Tuple<>(parseLong(id_friend),parseLong(id))).isPresent();
+    }
+
+    public List<FriendRequest> get_all_friendrequests_of_user(User user) {
+        List<FriendRequest> returnList = new ArrayList<>();
+        for(FriendRequest friendRequest : get_all_friendrequests()){
+            if(Objects.equals(friendRequest.getReceiver(), user.getId()))
+                returnList.add(friendRequest);
+        }
+        return returnList;
+    }
+
+    public void del_friendRequest(String sender, String receiver) {
+        iDfromStringValidator.validate(receiver);
+        iDfromStringValidator.validate(sender);
+
+        friendRequestRepo.delete(new Tuple<>(parseLong(sender),parseLong(receiver)));
+        notifyObservers(new AccountEvent(ChangeEvent.REMOVED_FRIENDREQUEST,
+                usersRepo.findOne(parseLong(sender)).orElse(new User())));
+
+    }
 }

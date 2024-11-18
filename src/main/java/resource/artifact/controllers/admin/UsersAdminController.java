@@ -1,4 +1,4 @@
-package resource.artifact.controllers;
+package resource.artifact.controllers.admin;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,6 +12,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import resource.artifact.MainApplication;
 import javafx.event.ActionEvent;
+import resource.artifact.controllers.SceneChangerController;
 import resource.artifact.domains.User;
 import resource.artifact.domains.validators.ValidationException;
 import resource.artifact.services.SocialNetworking;
@@ -107,7 +108,9 @@ public class UsersAdminController implements SceneChangerController, Observer<Ac
     @FXML
     private void DeleteUser(ActionEvent actionEvent){
         try {
-            service.delete_user(tableView.getSelectionModel().getSelectedItem().getId().toString());
+            User selectedItem = tableView.getSelectionModel().getSelectedItem();
+            if(selectedItem != null)
+             service.delete_user(selectedItem.getId().toString());
         } catch (ValidationException e){
             AlterCreator.create(Alert.AlertType.ERROR, e.getMessage());
         }
