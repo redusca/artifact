@@ -36,7 +36,7 @@ public abstract class AbstractDataBaseRepository<Id,E extends Entity<Id>> extend
     /**
      *Function converts all entries from the database into the MAP of the repository
      */
-    private void ReadDataBaseEntries() {
+    protected void ReadDataBaseEntries() {
         Statement statement;
         ResultSet resultSet;
         try {
@@ -118,7 +118,6 @@ public abstract class AbstractDataBaseRepository<Id,E extends Entity<Id>> extend
         super(validator);
         connect(connectInfo);
         this.tableName = tableName;
-        ReadDataBaseEntries();
     }
 
     public String getTableName() {
@@ -148,6 +147,6 @@ public abstract class AbstractDataBaseRepository<Id,E extends Entity<Id>> extend
         Optional<E> returnObj = super.update(entity);
         if(returnObj.isPresent() && oldValue.isPresent() && returnObj.get() == oldValue.get())
             RowStatement(entity,RowCase.UPDATE);
-        return returnObj;
+        return oldValue;
     }
 }

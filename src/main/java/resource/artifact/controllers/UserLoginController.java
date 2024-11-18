@@ -5,12 +5,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import resource.artifact.MainApplication;
 import resource.artifact.services.SocialNetworking;
+import resource.artifact.utils.AlterCreator;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -21,7 +23,6 @@ public class UserLoginController implements SceneChangerController{
     private SocialNetworking service;
     @FXML
     private Pane thisPane;
-
 
     @Override
     public void setService(SocialNetworking service) {
@@ -40,7 +41,7 @@ public class UserLoginController implements SceneChangerController{
             AnchorPane userLayout = fxmlLoader.load();
             stage.setScene(new Scene(userLayout));
 
-            UsersAdminController userController = fxmlLoader.getController();
+            UserAccController userController = fxmlLoader.getController();
             userController.setService(service);
 
             stage.setTitle("andrei account");
@@ -55,9 +56,7 @@ public class UserLoginController implements SceneChangerController{
             return;
         }
 
-        Alert alert =new Alert(Alert.AlertType.WARNING);
-        alert.setContentText("User doesn't exist!Try to sign up maybe");;
-        alert.show();
+        AlterCreator.create(Alert.AlertType.INFORMATION,"Username not found!");
     }
 
     private void LoginActionAdmin() throws IOException{

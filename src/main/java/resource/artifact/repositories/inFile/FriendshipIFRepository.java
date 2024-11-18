@@ -30,6 +30,9 @@ public class FriendshipIFRepository extends AbstractInFileRepository<Tuple<Long,
     public Friendship createEntity(String line) {
         String[] friendshipValues = line.split(";");
 
+        if(friendshipValues.length != 2)
+            throw new IllegalArgumentException("The format is invalid for Friendship!");
+
         IDfromStringValidator IDValidator= new IDfromStringValidator();
         IDValidator.validate(friendshipValues[0]);
         IDValidator.validate(friendshipValues[1]);

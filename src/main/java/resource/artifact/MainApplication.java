@@ -3,14 +3,14 @@ package resource.artifact;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import resource.artifact.controllers.UserLoginController;
-import resource.artifact.controllers.UsersAdminController;
 import resource.artifact.domains.DataBaseConnectInfo;
+import resource.artifact.domains.validators.AccountValidator;
 import resource.artifact.domains.validators.FriendshipValidator;
 import resource.artifact.domains.validators.UserValidator;
+import resource.artifact.repositories.database.AccountDBRepository;
 import resource.artifact.repositories.database.FriendshipDBRepository;
 import resource.artifact.repositories.database.UserDBRepository;
 import resource.artifact.services.SocialNetworking;
@@ -33,8 +33,12 @@ public class MainApplication extends Application {
                 userDBRepository, new FriendshipValidator(userDBRepository),
                 infoConnect , "friendships"
         );
+        AccountDBRepository accountDBRepository = new AccountDBRepository(
+                new AccountValidator(userDBRepository),
+                infoConnect, "accounts",userDBRepository
+        );
         //Service
-        userService = new SocialNetworking(userDBRepository,friendshipDBRepository);
+        userService = new SocialNetworking(userDBRepository,friendshipDBRepository,accountDBRepository);
 
         initView(stage);
         stage.setTitle("Login Page");

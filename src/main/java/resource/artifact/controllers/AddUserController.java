@@ -7,6 +7,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import resource.artifact.domains.User;
 import resource.artifact.domains.validators.ValidationException;
 import resource.artifact.services.SocialNetworking;
 import javafx.event.ActionEvent;
@@ -17,6 +18,11 @@ public class AddUserController {
     public TextField FirstNameField;
     @FXML
     public TextField LastNameField;
+    @FXML
+    public TextField PasswordField;
+    @FXML
+    public TextField UsernameField;
+
     private SocialNetworking service;
     @FXML
     private StackPane stackPane;
@@ -29,6 +35,8 @@ public class AddUserController {
     private void AddUserAction(ActionEvent actionEvent){
         try{
             service.add_user(FirstNameField.getText(),LastNameField.getText());
+            service.add_Account(UsernameField.getText(),PasswordField.getText(),
+                    service.find_last_user_added().orElse(new User()).getId().toString());
             Stage stage = (Stage) stackPane.getScene().getWindow();
             stage.close();
         } catch (ValidationException e) {

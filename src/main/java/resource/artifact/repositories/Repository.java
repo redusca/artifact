@@ -24,6 +24,11 @@ public interface Repository<ID, E extends Entity<ID>> {
     Optional<E> findOne(ID id);
 
     /**
+     * @return last entity added to the repository or null if empty;
+     */
+    Optional<E> findLast();
+
+    /**
      *
      * @return all entities
      */

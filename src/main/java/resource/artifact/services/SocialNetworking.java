@@ -1,12 +1,13 @@
 package resource.artifact.services;
 
+import resource.artifact.domains.Account;
 import resource.artifact.domains.Friendship;
 import resource.artifact.domains.Tuple;
 import resource.artifact.domains.User;
 import resource.artifact.domains.validators.IDfromStringValidator;
 import resource.artifact.repositories.inMemory.InMemoryRepository;
+import resource.artifact.utils.events.AccountEvent;
 import resource.artifact.utils.events.ChangeEvent;
-import resource.artifact.utils.events.UserOrFriendShipChangeEvent;
 import resource.artifact.utils.observers.Observable;
 import resource.artifact.utils.observers.Observer;
 
@@ -14,16 +15,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static java.lang.Long.parseLong;
 
-public class SocialNetworking implements Observable<UserOrFriendShipChangeEvent>{
+
+public class SocialNetworking implements Observable<AccountEvent>{
     private final InMemoryRepository<Long, User> usersRepo;
     private final InMemoryRepository<Tuple<Long,Long>,Friendship> friendshipsRepo;
     private final IDfromStringValidator iDfromStringValidator;
-    private final List<Observer<UserOrFriendShipChangeEvent>> observers=new ArrayList<>();
+    private final List<Observer<AccountEvent>> observers=new ArrayList<>();
+    private final InMemoryRepository<Long, Account> accountRepository;
 
-    public SocialNetworking(InMemoryRepository<Long, User> usersRepo, InMemoryRepository<Tuple<Long, Long>, Friendship> friendshipsRepo) {
+    public SocialNetworking(InMemoryRepository<Long, User> usersRepo, InMemoryRepository<Tuple<Long, Long>, Friendship> friendshipsRepo,
+                            InMemoryRepository<Long,Account> accountRepository) {
         this.usersRepo = usersRepo;
         this.friendshipsRepo = friendshipsRepo;
+        this.accountRepository = accountRepository;
         iDfromStringValidator = new IDfromStringValidator();
     }
     //Users operations
@@ -38,9 +44,7 @@ public class SocialNetworking implements Observable<UserOrFriendShipChangeEvent>
      */
     public Optional<User> add_user(String nume, String prenume){
         User saveValue = new User(nume,prenume);
-        Optional<User> returnValue = usersRepo.save(saveValue);
-        notifyObservers(new UserOrFriendShipChangeEvent(ChangeEvent.ADD,saveValue));
-        return returnValue;
+        return usersRepo.save(saveValue);
     }
     //2
 
@@ -55,11 +59,13 @@ public class SocialNetworking implements Observable<UserOrFriendShipChangeEvent>
         Optional<User> delValue = usersRepo.findOne(Long.parseLong(id));
 
         //Deleting all friendships
-        delValue.ifPresent(user -> user.getFriends().forEach(id_friend -> {
-            usersRepo.findOne(id_friend).orElse(new User()).removeFriend(user.getId());
-            friendshipsRepo.delete(new Friendship(id_friend,delValue.get().getId()).getId());
-        }));
-        notifyObservers(new UserOrFriendShipChangeEvent(ChangeEvent.DELETE,delValue.orElse(new User())));
+        delValue.ifPresent(user -> {user.getFriends().forEach(id_friend -> {
+                usersRepo.findOne(id_friend).orElse(new User()).removeFriend(user.getId());
+                friendshipsRepo.delete(new Friendship(id_friend,delValue.get().getId()).getId());
+            });
+            del_Account(user.getId().toString());
+        });
+        notifyObservers(new AccountEvent(ChangeEvent.DEL_USER,delValue.orElse(new User())));
 
         return usersRepo.delete(delValue.orElse(new User()).getId());
     }
@@ -84,7 +90,15 @@ public class SocialNetworking implements Observable<UserOrFriendShipChangeEvent>
         User newValue = new User(nume,prenume);
         newValue.setId(Long.parseLong(id));
 
+        Account acc = accountRepository.findOne(oldValue.orElse(new User()).getId()).orElse(new Account());
+        acc.getUser().setFirstName(newValue.getFirstName());
+        acc.getUser().setLastName(newValue.getLastName());
+
         return usersRepo.update(newValue);
+    }
+
+    public Optional<User> find_last_user_added(){
+        return usersRepo.findLast();
     }
 
     /**
@@ -142,17 +156,63 @@ public class SocialNetworking implements Observable<UserOrFriendShipChangeEvent>
     }
 
     @Override
-    public void addObserver(Observer<UserOrFriendShipChangeEvent> observer) {
-        observers.add(observer);
+    public void addObserver(Observer<AccountEvent> eventObserver) {
+        observers.add(eventObserver);
     }
 
     @Override
-    public void removeObserver(Observer<UserOrFriendShipChangeEvent> observer) {
-        observers.remove(observer);
+    public void removeObserver(Observer<AccountEvent> eventObserver) {
+        observers.remove(eventObserver);
     }
 
     @Override
-    public void notifyObservers(UserOrFriendShipChangeEvent event) {
+    public void notifyObservers(AccountEvent event) {
         observers.forEach(observer->observer.update(event));
     }
+
+    public Optional<User> find_user(Long id) {
+        return usersRepo.findOne(id);
+    }
+
+
+    public Optional<Account> add_Account(String username,String password,String id){
+        iDfromStringValidator.validate(id);
+
+        if(find_user(parseLong(id)).isEmpty())
+            throw new IllegalArgumentException("User id is not in repository!");
+
+        Account saveValue = new Account(username,password,
+                find_user(parseLong(id)).orElse(new User()));
+        Optional<Account> returnValue = accountRepository.save(saveValue);
+        notifyObservers(new AccountEvent(ChangeEvent.ADD,saveValue));
+
+        return returnValue;
+    }
+
+    public Optional<Account> del_Account(String id){
+        iDfromStringValidator.validate(id);
+
+        Optional<Account> delValue = accountRepository.delete(parseLong(id));
+
+        delValue.ifPresent(account -> usersRepo.delete(account.getUser().getId()));
+
+        notifyObservers(new AccountEvent(ChangeEvent.DELETE,delValue.orElse(new Account())));
+        return delValue;
+    }
+
+    public Optional<Account> update_Account(String username,String password,String id){
+        iDfromStringValidator.validate(id);
+
+        User userId = find_user(parseLong(id)).orElse(new User());
+        Account newValue = new Account(username,password,userId);
+        Optional<Account> oldAcc =  accountRepository.update(newValue);
+
+        oldAcc.ifPresent(oldValue -> notifyObservers(new AccountEvent(ChangeEvent.UPDATE, newValue, oldValue)));
+        return oldAcc;
+    }
+
+    public Iterable<Account> get_all_Accounts(){
+        return accountRepository.findAll();
+    }
+
 }

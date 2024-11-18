@@ -8,17 +8,22 @@
 
 <AnchorPane fx:id="thisAnchorPane" prefHeight="520.0" prefWidth="950.0" xmlns:fx="http://javafx.com/fxml"
             fx:controller="resource.artifact.controllers.FriendsAdminController">
-    <VBox prefHeight="35.0" prefWidth="655.0" spacing="20.0" layoutX="20.0" layoutY="20.0">
-        <Button text="Users Table" onAction="#ChangeScene"/>
-        <TableView fx:id="tableView" minHeight="-Infinity" minWidth="-Infinity" >
-            <columns>
-                <TableColumn fx:id="tableFirstUser" prefWidth="150.0" text="First User"/>
-                <TableColumn fx:id="tableSecondUser" prefWidth="150.0" text="Second User"/>
-                <TableColumn fx:id="tableDate" prefWidth="150.0" text="FriendShip date"/>
-            </columns>
-            <columnResizePolicy>
-                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-            </columnResizePolicy>
-        </TableView>
-    </VBox>
+    <HBox spacing="20.0" layoutX="20.0" layoutY="20.0" >
+         <VBox prefHeight="35.0" prefWidth="655.0" spacing="20.0" >
+             <Button text="Users Table" onAction="#ChangeScene"/>
+             <TableView fx:id="tableView" minHeight="-Infinity" minWidth="-Infinity" >
+                 <columns>
+                     <TableColumn fx:id="tableFirstUser" prefWidth="150.0" text="First User"/>
+                     <TableColumn fx:id="tableSecondUser" prefWidth="150.0" text="Second User"/>
+                     <TableColumn fx:id="tableDate" prefWidth="150.0" text="FriendShip date"/>
+                 </columns>
+                 <columnResizePolicy>
+                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                 </columnResizePolicy>
+             </TableView>
+         </VBox>
+        <VBox spacing="20.0">
+            <Button text="Del FriendShip" onAction="#DelFriendship"/>
+        </VBox>
+    </HBox>
 </AnchorPane>

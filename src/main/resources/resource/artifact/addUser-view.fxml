@@ -8,6 +8,10 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="resource.artifact.controllers.AddUserController">
     <VBox spacing="20.0" alignment="CENTER" layoutX="20.0" layoutY="20.0">
+        <Label text="Username:" alignment="CENTER"/>
+        <TextField fx:id="UsernameField" maxWidth="200" alignment="CENTER"/>
+        <Label text="Password:" alignment="CENTER"/>
+        <TextField fx:id="PasswordField" maxWidth="200" alignment="CENTER" />
         <Label text="First name:" alignment="CENTER"/>
         <TextField fx:id="FirstNameField" maxWidth="200" alignment="CENTER"/>
         <Label text="Last name:" alignment="CENTER"/>

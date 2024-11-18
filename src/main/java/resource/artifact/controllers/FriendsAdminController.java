@@ -4,12 +4,17 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import resource.artifact.domains.Friendship;
+import resource.artifact.domains.Tuple;
+import resource.artifact.domains.validators.ValidationException;
 import resource.artifact.services.SocialNetworking;
+import resource.artifact.utils.AlterCreator;
 import resource.artifact.utils.SceneSwitch;
 
 import java.io.IOException;
@@ -51,5 +56,14 @@ public class FriendsAdminController implements SceneChangerController{
     @Override
     public void ChangeScene(ActionEvent actionEvent) throws IOException {
          SceneSwitch.SceneSwitchAction(thisAnchorPane,"userAdmin-view.fxml",service);
+    }
+
+    public void DelFriendship(ActionEvent actionEvent) {
+        try {
+            Tuple<Long,Long> idDel = tableView.getSelectionModel().getSelectedItem().getId();
+            service.del_friendship(idDel.first().toString(),idDel.last().toString());
+        } catch (ValidationException e){
+            AlterCreator.create(Alert.AlertType.ERROR, e.getMessage());
+        }
     }
 }

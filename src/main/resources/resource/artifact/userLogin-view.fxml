@@ -8,10 +8,10 @@
 
 <StackPane xmlns="http://javafx.com/javafx" fx:id="thisPane"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="resource.artifact.controllers.UserLoginController" prefWidth="200" prefHeight="150">
-    <VBox>
-        <Label text="username"/>
-        <TextField fx:id="usernameField" />
+            fx:controller="resource.artifact.controllers.UserLoginController" prefWidth="300" prefHeight="150">
+    <VBox alignment="CENTER" spacing="20.0">
+        <Label text="username" alignment="CENTER"/>
+        <TextField fx:id="usernameField" alignment="CENTER" maxWidth="200.0"/>
         <Button  text="Log In" onAction="#LoginAction" layoutY="20.0" layoutX="20.0" alignment="CENTER"/>
     </VBox>
 </StackPane>

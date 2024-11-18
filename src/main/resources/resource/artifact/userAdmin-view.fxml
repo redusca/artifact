@@ -17,6 +17,7 @@
             <Button text="Friends Table" onAction="#ChangeScene" />
             <TableView fx:id="tableView" minHeight="-Infinity" minWidth="-Infinity" >
                 <columns>
+                    <TableColumn fx:id="tableColumnUsername" prefWidth="150.0" text="Username"/>
                     <TableColumn fx:id="tableColumnFirstName" prefWidth="150.0" text="First Name"/>
                     <TableColumn fx:id="tableColumnLastName" prefWidth="150.0" text="Last Name"/>
                 </columns>
@@ -26,6 +27,8 @@
             </TableView>
         </VBox>
         <VBox prefHeight="35.0" prefWidth="300.0" spacing="20.0" >
+            <Label text="UserName" />
+            <TextField fx:id="UsernameField" maxWidth="200.0"/>
             <Label text="First Name" />
             <TextField fx:id="firstNameField" maxWidth="200.0"/>
             <Label text="Last Name" />
@@ -33,7 +36,7 @@
            <HBox spacing="30.0">
                <Button text = "Add" onAction="#AddUser"/>
                <Button text = "Delete" onAction="#DeleteUser"/>
-               <Button text = "Update"/>
+               <Button text = "Update" onAction="#UpdateUser"/>
            </HBox>
         </VBox>
     </HBox>

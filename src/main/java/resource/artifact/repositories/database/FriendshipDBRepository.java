@@ -18,6 +18,7 @@ public class FriendshipDBRepository extends AbstractDataBaseRepository<Tuple<Lon
                                   DataBaseConnectInfo connectInfo, String tableName) {
         super(validator, connectInfo, tableName);
         this.usersRepo=usersRepo;
+        ReadDataBaseEntries();
         postLoad();
     }
 

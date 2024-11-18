@@ -1,7 +1,6 @@
 package resource.artifact.controllers;
 
 import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import resource.artifact.services.SocialNetworking;
 
 import java.io.IOException;

@@ -29,5 +29,7 @@ module resource.artifact {
     exports resource.artifact.repositories.inMemory to javafx.fxml;
     opens resource.artifact.utils.observers;
     exports resource.artifact.utils.observers to java.xml;
+    opens resource.artifact.repositories;
+    exports resource.artifact.repositories to java.xml;
 
 }

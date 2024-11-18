@@ -13,10 +13,12 @@ public class InMemoryRepository<Id,E extends Entity<Id>> implements Repository<I
 
     private final Validator<E> validator;
     protected Map<Id, E> entities;
+    private E lastSaved;
 
     public InMemoryRepository(Validator<E> validator) {
         this.validator = validator;
         entities = new HashMap<>();
+        lastSaved=null;
     }
 
     @Override
@@ -24,6 +26,11 @@ public class InMemoryRepository<Id,E extends Entity<Id>> implements Repository<I
         if(id == null)
             throw new IllegalArgumentException("id is null");
         return Optional.ofNullable(entities.get(id));
+    }
+
+    @Override
+    public Optional<E> findLast() {
+        return Optional.ofNullable(lastSaved);
     }
 
     @Override
@@ -38,6 +45,7 @@ public class InMemoryRepository<Id,E extends Entity<Id>> implements Repository<I
         if(entities.get(entity.getId()) != null)
             throw new IllegalArgumentException("entity already exists");
         validator.validate(entity);
+        lastSaved = entity;
         return Optional.ofNullable(entities.put(entity.getId(), entity));
     }
 
