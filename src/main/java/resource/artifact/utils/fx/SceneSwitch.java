@@ -1,4 +1,4 @@
-package resource.artifact.utils;
+package resource.artifact.utils.fx;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.AnchorPane;

@@ -11,12 +11,12 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import resource.artifact.MainApplication;
-import resource.artifact.domains.Account;
 import javafx.event.ActionEvent;
+import resource.artifact.domains.User;
 import resource.artifact.domains.validators.ValidationException;
 import resource.artifact.services.SocialNetworking;
-import resource.artifact.utils.AlterCreator;
-import resource.artifact.utils.SceneSwitch;
+import resource.artifact.utils.fx.AlterCreator;
+import resource.artifact.utils.fx.SceneSwitch;
 import resource.artifact.utils.events.AccountEvent;
 import resource.artifact.utils.events.ChangeEvent;
 import resource.artifact.utils.observers.Observer;
@@ -25,7 +25,7 @@ import java.io.IOException;
 
 public class UsersAdminController implements SceneChangerController, Observer<AccountEvent> {
     private SocialNetworking service;
-    ObservableList<Account> model = FXCollections.observableArrayList();
+    ObservableList<User> model = FXCollections.observableArrayList();
 
     @FXML
     private TextField firstNameField;
@@ -36,13 +36,13 @@ public class UsersAdminController implements SceneChangerController, Observer<Ac
     @FXML
     private Label message;
     @FXML
-    private TableView<Account> tableView;
+    private TableView<User> tableView;
     @FXML
-    TableColumn<Account,String> tableColumnFirstName;
+    TableColumn<User,String> tableColumnFirstName;
     @FXML
-    TableColumn<Account,String> tableColumnLastName;
+    TableColumn<User,String> tableColumnLastName;
     @FXML
-    TableColumn<Account,String> tableColumnUsername;
+    TableColumn<User,String> tableColumnUsername;
     @FXML
     private AnchorPane thisAnchorPane;
 
@@ -58,15 +58,15 @@ public class UsersAdminController implements SceneChangerController, Observer<Ac
     }
 
     private void initModel() {
-        service.get_all_Accounts().forEach(model::add);
+        service.get_all_users().forEach(model::add);
         tableView.setItems(model);
     }
 
     @FXML
     public void initialize() {
-        tableColumnUsername.setCellValueFactory(new PropertyValueFactory<Account,String>("username"));
-        tableColumnFirstName.setCellValueFactory(new PropertyValueFactory<Account,String>("firstName"));
-        tableColumnLastName.setCellValueFactory(new PropertyValueFactory<Account,String>("lastName"));
+        tableColumnUsername.setCellValueFactory(new PropertyValueFactory<User,String>("username"));
+        tableColumnFirstName.setCellValueFactory(new PropertyValueFactory<User,String>("firstName"));
+        tableColumnLastName.setCellValueFactory(new PropertyValueFactory<User,String>("lastName"));
         tableView.setItems(model);
 
         tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -80,12 +80,12 @@ public class UsersAdminController implements SceneChangerController, Observer<Ac
     @Override
     public void update(AccountEvent event) {
         if(event.getEvent() == ChangeEvent.ADD)
-            model.add(event.getACC());
+            model.add(event.getData());
         if(event.getEvent() == ChangeEvent.DELETE)
-            model.remove(event.getACC());
+            model.remove(event.getData());
         if(event.getEvent() == ChangeEvent.UPDATE)
-            model.set(model.indexOf(event.getOldACC()),
-                    event.getACC());
+            model.set(model.indexOf(event.getOldData()),
+                    event.getData());
     }
 
     @FXML
@@ -107,13 +107,13 @@ public class UsersAdminController implements SceneChangerController, Observer<Ac
     @FXML
     private void DeleteUser(ActionEvent actionEvent){
         try {
-            service.del_Account(tableView.getSelectionModel().getSelectedItem().getUser().getId().toString());
+            service.delete_user(tableView.getSelectionModel().getSelectedItem().getId().toString());
         } catch (ValidationException e){
             AlterCreator.create(Alert.AlertType.ERROR, e.getMessage());
         }
     }
 
-    private void populateTextFields(Account value){
+    private void populateTextFields(User value){
         firstNameField.setText(value.getFirstName());
         lastNameField.setText(value.getLastName());
         UsernameField.setText(value.getUsername());
@@ -121,11 +121,11 @@ public class UsersAdminController implements SceneChangerController, Observer<Ac
 
     @FXML
     private void UpdateUser(ActionEvent actionEvent){
-        Account selectItem = tableView.getSelectionModel().getSelectedItem();
+        User selectItem = tableView.getSelectionModel().getSelectedItem();
         if(selectItem != null)
             try {
-                service.update_user(selectItem.getUser().getId().toString(), firstNameField.getText(), lastNameField.getText());
-                service.update_Account(UsernameField.getText(), selectItem.getPassword(), selectItem.getUser().getId().toString());
+                service.update_user(selectItem.getId().toString(), firstNameField.getText(), lastNameField.getText(),
+                        selectItem.getPassword(),UsernameField.getText());
             } catch (ValidationException e){
                 AlterCreator.create(Alert.AlertType.ERROR ,e.getMessage());
             }

@@ -20,9 +20,9 @@ public class UserIFRepository extends AbstractInFileRepository<Long, User>{
     @Override
     public User createEntity(String line) {
         String[] userValues = line.split(";");
-        if(userValues.length != 3)
+        if(userValues.length != 5)
             throw new IllegalArgumentException("The format is invalid for User!");
-        User inFileUser = new User(userValues[1], userValues[2]);
+        User inFileUser = new User(userValues[1], userValues[2],userValues[3],userValues[4]);
 
         IDfromStringValidator IDValidator= new IDfromStringValidator();
         IDValidator.validate(userValues[0]);
@@ -33,7 +33,8 @@ public class UserIFRepository extends AbstractInFileRepository<Long, User>{
 
     @Override
     public String saveEntity(User entity) {
-        return entity.getId() + ";" + entity.getFirstName() + ";" + entity.getLastName();
+        return entity.getId() + ";" + entity.getFirstName() + ";" + entity.getLastName() +
+                ";" + entity.getPassword() + ";" +entity.getUsername();
     }
 
     @Override

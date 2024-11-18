@@ -1,4 +1,4 @@
-package resource.artifact.utils;
+package resource.artifact.utils.fx;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;

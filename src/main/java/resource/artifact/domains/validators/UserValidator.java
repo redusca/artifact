@@ -2,6 +2,8 @@ package resource.artifact.domains.validators;
 
 import resource.artifact.domains.User;
 
+import java.util.Objects;
+
 public class UserValidator implements Validator<User> {
     @Override
     public void validate(User entity) throws ValidationException {
@@ -10,6 +12,12 @@ public class UserValidator implements Validator<User> {
 
         if(entity.getId() == null)
            errorString = errorString + "    Id is required\n";
+
+        if(entity.getUsername() == null || Objects.equals(entity.getUsername(), ""))
+            errorString += "   Username cannot be empty!\n";
+
+        if(entity.getPassword() == null || Objects.equals((entity.getUsername()),""))
+            errorString += "   Password cannot be empty!\n";
 
         if(entity.getId() <= 0)
            errorString += "   Id must be greater than 0\n";

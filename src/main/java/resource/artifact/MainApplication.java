@@ -7,10 +7,8 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import resource.artifact.controllers.UserLoginController;
 import resource.artifact.domains.DataBaseConnectInfo;
-import resource.artifact.domains.validators.AccountValidator;
 import resource.artifact.domains.validators.FriendshipValidator;
 import resource.artifact.domains.validators.UserValidator;
-import resource.artifact.repositories.database.AccountDBRepository;
 import resource.artifact.repositories.database.FriendshipDBRepository;
 import resource.artifact.repositories.database.UserDBRepository;
 import resource.artifact.services.SocialNetworking;
@@ -33,12 +31,8 @@ public class MainApplication extends Application {
                 userDBRepository, new FriendshipValidator(userDBRepository),
                 infoConnect , "friendships"
         );
-        AccountDBRepository accountDBRepository = new AccountDBRepository(
-                new AccountValidator(userDBRepository),
-                infoConnect, "accounts",userDBRepository
-        );
         //Service
-        userService = new SocialNetworking(userDBRepository,friendshipDBRepository,accountDBRepository);
+        userService = new SocialNetworking(userDBRepository,friendshipDBRepository);
 
         initView(stage);
         stage.setTitle("Login Page");

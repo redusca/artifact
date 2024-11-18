@@ -5,7 +5,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -14,12 +13,16 @@ import resource.artifact.domains.Friendship;
 import resource.artifact.domains.Tuple;
 import resource.artifact.domains.validators.ValidationException;
 import resource.artifact.services.SocialNetworking;
-import resource.artifact.utils.AlterCreator;
-import resource.artifact.utils.SceneSwitch;
+import resource.artifact.utils.events.AccountEvent;
+import resource.artifact.utils.events.ChangeEvent;
+import resource.artifact.utils.fx.AlterCreator;
+import resource.artifact.utils.fx.SceneSwitch;
+import resource.artifact.utils.observers.Observable;
+import resource.artifact.utils.observers.Observer;
 
 import java.io.IOException;
 
-public class FriendsAdminController implements SceneChangerController{
+public class FriendsAdminController implements SceneChangerController, Observer<AccountEvent> {
     @FXML
     public AnchorPane thisAnchorPane;
     ObservableList<Friendship> model = FXCollections.observableArrayList();
@@ -38,6 +41,7 @@ public class FriendsAdminController implements SceneChangerController{
     public void setService(SocialNetworking service) {
         this.service = service;
         initModel();
+        service.addObserver(this);
     }
 
     private void initModel() {
@@ -65,5 +69,11 @@ public class FriendsAdminController implements SceneChangerController{
         } catch (ValidationException e){
             AlterCreator.create(Alert.AlertType.ERROR, e.getMessage());
         }
+    }
+
+    @Override
+    public void update(AccountEvent actionEvent) {
+        if(actionEvent.getEvent() == ChangeEvent.REMOVED_FRIENDSHIP)
+            model.remove(actionEvent.getFriendship());
     }
 }

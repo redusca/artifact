@@ -20,7 +20,9 @@ public class UserDBRepository extends AbstractDataBaseRepository<Long,User> {
     public User createEntity(ResultSet resultSet) {
         try {
             User user = new User(resultSet.getString("nume"),
-                    resultSet.getString("prenume"));
+                    resultSet.getString("prenume"),
+                    resultSet.getString("password"),
+                    resultSet.getString("username"));
             user.setId(resultSet.getLong("id"));
             return user;
         } catch (SQLException e){
@@ -30,8 +32,8 @@ public class UserDBRepository extends AbstractDataBaseRepository<Long,User> {
 
     @Override
     public String addFormat(User entity) {
-        return String.format("Insert into %s (nume,prenume) Values ('%s','%s')",
-                getTableName(), entity.getFirstName(), entity.getLastName());
+        return String.format("Insert into %s (nume,prenume,password,username) Values ('%s','%s','%s','%s')",
+                getTableName(), entity.getFirstName(), entity.getLastName(),entity.getPassword(),entity.getUsername());
     }
 
     @Override
@@ -41,7 +43,8 @@ public class UserDBRepository extends AbstractDataBaseRepository<Long,User> {
 
     @Override
     public String updateFormat(User entity) {
-        return String.format("Update %s Set nume='%s', prenume='%s' Where id = %d", getTableName(), entity.getFirstName(),entity.getLastName(),entity.getId());
+        return String.format("Update %s Set nume='%s', prenume='%s', password='%s', username='%s' Where id = %d",
+                getTableName(), entity.getFirstName(),entity.getLastName(),entity.getPassword(),entity.getUsername(),entity.getId());
     }
 
     @Override
@@ -54,6 +57,8 @@ public class UserDBRepository extends AbstractDataBaseRepository<Long,User> {
             resultSet.next();
             //got the last id from identity
             entity.setId(resultSet.getLong("last_value")+1);
+
+
             return super.save(entity);
 
         } catch (SQLException e) {

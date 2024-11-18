@@ -8,9 +8,13 @@ public class User extends Entity<Long>{
     private Long id;
     private String firstName;
     private String lastName;
+    private String password;
+    private String username;
     private final List<Long> friends;
 
-    public User(String firstName,String lastName) {
+    public User(String firstName, String lastName, String password, String username) {
+        this.password = password;
+        this.username = username;
         friends = new ArrayList<>();
         setId(0L);
         this.firstName = firstName;
@@ -59,16 +63,33 @@ public class User extends Entity<Long>{
     //override
     @Override
     public String toString() {
-        return firstName + " " + lastName;
+        return username + " " + firstName + " " + lastName;
     }
     @Override
     public boolean equals(Object o) {
         if(this == o) return true;
         if(!(o instanceof User user)) return false;
-        return firstName.equals(user.getFirstName()) && lastName.equals(user.getLastName());
+        return firstName.equals(user.getFirstName()) && lastName.equals(user.getLastName()) &&
+                password.equals(user.getPassword()) && username.equals(user.getUsername());
     }
     @Override
     public int hashCode() {
         return Objects.hash(getFirstName(), getLastName());
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }
