@@ -10,7 +10,6 @@ import resource.artifact.utils.DateTimeFormat;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 

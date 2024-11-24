@@ -9,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import resource.artifact.MainApplication;
 import javafx.event.ActionEvent;
@@ -16,7 +17,7 @@ import resource.artifact.controllers.SceneChangerController;
 import resource.artifact.domains.User;
 import resource.artifact.domains.validators.ValidationException;
 import resource.artifact.services.SocialNetworking;
-import resource.artifact.utils.fx.AlterCreator;
+import resource.artifact.utils.fx.AlertCreator;
 import resource.artifact.utils.fx.SceneSwitch;
 import resource.artifact.utils.events.AccountEvent;
 import resource.artifact.utils.events.ChangeEvent;
@@ -65,9 +66,9 @@ public class UsersAdminController implements SceneChangerController, Observer<Ac
 
     @FXML
     public void initialize() {
-        tableColumnUsername.setCellValueFactory(new PropertyValueFactory<User,String>("username"));
-        tableColumnFirstName.setCellValueFactory(new PropertyValueFactory<User,String>("firstName"));
-        tableColumnLastName.setCellValueFactory(new PropertyValueFactory<User,String>("lastName"));
+        tableColumnUsername.setCellValueFactory(new PropertyValueFactory<>("username"));
+        tableColumnFirstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+        tableColumnLastName.setCellValueFactory(new PropertyValueFactory<>("lastName"));
         tableView.setItems(model);
 
         tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -101,7 +102,7 @@ public class UsersAdminController implements SceneChangerController, Observer<Ac
 
         AddUserController userController = fxmlLoader.getController();
         userController.setService(service);
-
+        addStage.initModality(Modality.APPLICATION_MODAL);
         addStage.show();
     }
 
@@ -112,7 +113,7 @@ public class UsersAdminController implements SceneChangerController, Observer<Ac
             if(selectedItem != null)
              service.delete_user(selectedItem.getId().toString());
         } catch (ValidationException e){
-            AlterCreator.create(Alert.AlertType.ERROR, e.getMessage());
+            AlertCreator.create(Alert.AlertType.ERROR, e.getMessage());
         }
     }
 
@@ -130,10 +131,10 @@ public class UsersAdminController implements SceneChangerController, Observer<Ac
                 service.update_user(selectItem.getId().toString(), firstNameField.getText(), lastNameField.getText(),
                         selectItem.getPassword(),UsernameField.getText());
             } catch (ValidationException e){
-                AlterCreator.create(Alert.AlertType.ERROR ,e.getMessage());
+                AlertCreator.create(Alert.AlertType.ERROR ,e.getMessage());
             }
         else
-            AlterCreator.create(Alert.AlertType.INFORMATION,"Select an account!");
+            AlertCreator.create(Alert.AlertType.INFORMATION,"Select an account!");
     }
 
 }

@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public interface SceneChangerController {
 
-    public void setService(SocialNetworking service);
+    void setService(SocialNetworking service);
 
-    public void ChangeScene(ActionEvent actionEvent) throws IOException ;
+    void ChangeScene(ActionEvent actionEvent) throws IOException ;
 }

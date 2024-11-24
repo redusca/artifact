@@ -1,9 +1,6 @@
 package resource.artifact.services;
 
-import resource.artifact.domains.FriendRequest;
-import resource.artifact.domains.Friendship;
-import resource.artifact.domains.Tuple;
-import resource.artifact.domains.User;
+import resource.artifact.domains.*;
 import resource.artifact.domains.validators.IDfromStringValidator;
 import resource.artifact.domains.validators.ValidationException;
 import resource.artifact.repositories.inMemory.InMemoryRepository;
@@ -13,13 +10,12 @@ import resource.artifact.utils.observers.Observable;
 import resource.artifact.utils.observers.Observer;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import static java.lang.Long.max;
 import static java.lang.Long.parseLong;
+import static java.lang.Math.min;
 
 
 public class SocialNetworking implements Observable<AccountEvent>{
@@ -28,12 +24,14 @@ public class SocialNetworking implements Observable<AccountEvent>{
     private final IDfromStringValidator iDfromStringValidator;
     private final List<Observer<AccountEvent>> observers=new ArrayList<>();
     private final InMemoryRepository<Tuple<Long, Long>, FriendRequest> friendRequestRepo;
+    private final InMemoryRepository<Long, Message> mesagesRepo;
 
     public SocialNetworking(InMemoryRepository<Long, User> usersRepo, InMemoryRepository<Tuple<Long, Long>, Friendship> friendshipsRepo,
-    InMemoryRepository<Tuple<Long, Long>, FriendRequest> friendRequestRepo) {
+    InMemoryRepository<Tuple<Long, Long>, FriendRequest> friendRequestRepo, InMemoryRepository<Long, Message> messagesRepo) {
         this.usersRepo = usersRepo;
         this.friendshipsRepo = friendshipsRepo;
         this.friendRequestRepo = friendRequestRepo;
+        this.mesagesRepo = messagesRepo;
         iDfromStringValidator = new IDfromStringValidator();
     }
     //Users operations
@@ -44,7 +42,7 @@ public class SocialNetworking implements Observable<AccountEvent>{
      * @throws ValidationException : if the names are faulty values like null or empty strings or the username is already taken
      * @return {@code Optional} :null if the user was added
      */
-    public Optional<User> add_user(String username,String password,String nume, String prenume){
+    public Optional<User> add_user(String nume, String prenume,String password,String username){
 
         User saveValue = new User(nume,prenume,password,username);
         if(find_by_Username_User(username).isPresent())
@@ -116,14 +114,17 @@ public class SocialNetworking implements Observable<AccountEvent>{
         iDfromStringValidator.validate(id_low);
         iDfromStringValidator.validate(id_high);
 
-        //adding the friendship in the users lists
-        usersRepo.findOne(parseLong(id_low)).orElse(new User()).addFriend(parseLong(id_high));
-        usersRepo.findOne(parseLong(id_high)).orElse(new User()).addFriend(parseLong(id_low));
+        Long id_lowL = parseLong(id_low);
+        Long id_highL = parseLong(id_high);
 
-        Optional<Friendship> returnValue = friendshipsRepo.save(new Friendship(parseLong(id_low), parseLong(id_high)));
+        //adding the friendship in the users lists
+        usersRepo.findOne(id_lowL).orElse(new User()).addFriend(id_highL);
+        usersRepo.findOne(id_highL).orElse(new User()).addFriend(id_lowL);
+
+        Optional<Friendship> returnValue = friendshipsRepo.save(new Friendship(id_lowL, id_highL));
         if(returnValue.isEmpty())
             notifyObservers(new AccountEvent(ChangeEvent.ADD_FRIENDSHIP,
-                    friendshipsRepo.findOne(new Tuple<>(parseLong(id_low),parseLong(id_high))).orElse(new Friendship(0L,0L))));
+                    friendshipsRepo.findOne(new Tuple<>(min(id_lowL,id_highL),max(id_lowL,id_highL))).orElse(new Friendship(0L,0L))));
 
         return returnValue;
     }
@@ -196,13 +197,11 @@ public class SocialNetworking implements Observable<AccountEvent>{
 
     public Iterable<User> get_all_friends_of_User(String id) {
         iDfromStringValidator.validate(id);
-        List<User> friendList = new ArrayList<>();
         Optional<User> user = usersRepo.findOne(parseLong(id));
-        if(user.isPresent())
-            for(Long id_friend : user.get().getFriends())
-                friendList.add(usersRepo.findOne(id_friend).orElse(new User()));
-
-        return friendList;
+        return user.map(u -> u.getFriends().stream()
+                        .map(id_friend -> usersRepo.findOne(id_friend).orElse(new User()))
+                        .collect(Collectors.toList()))
+                .orElseGet(ArrayList::new);
     }
 
     public List<User> get_non_friend_of_user(User mainUser) {
@@ -224,9 +223,13 @@ public class SocialNetworking implements Observable<AccountEvent>{
         return true;
     }
 
-    public Iterable<FriendRequest> get_all_friendrequests(){
-        return friendRequestRepo.findAll();
+    public List<FriendRequest> get_all_friend_requests(){
+        List<FriendRequest> returnList = new ArrayList<>();
+        for(FriendRequest friendRequest : friendRequestRepo.findAll())
+            returnList.add(friendRequest);
+        return returnList;
     }
+
 
     public boolean friendRequestExists(String id, String id_friend){
         iDfromStringValidator.validate(id);
@@ -235,9 +238,9 @@ public class SocialNetworking implements Observable<AccountEvent>{
                 friendRequestRepo.findOne(new Tuple<>(parseLong(id_friend),parseLong(id))).isPresent();
     }
 
-    public List<FriendRequest> get_all_friendrequests_of_user(User user) {
+    public List<FriendRequest> get_all_friend_requests_of_user(User user) {
         List<FriendRequest> returnList = new ArrayList<>();
-        for(FriendRequest friendRequest : get_all_friendrequests()){
+        for(FriendRequest friendRequest : get_all_friend_requests()){
             if(Objects.equals(friendRequest.getReceiver(), user.getId()))
                 returnList.add(friendRequest);
         }
@@ -252,5 +255,26 @@ public class SocialNetworking implements Observable<AccountEvent>{
         notifyObservers(new AccountEvent(ChangeEvent.REMOVED_FRIENDREQUEST,
                 usersRepo.findOne(parseLong(sender)).orElse(new User())));
 
+    }
+
+    public void update_friendRequest(FriendRequest friendRequest) {
+        friendRequest.setStatus();
+        friendRequestRepo.update(friendRequest);
+    }
+
+    public void add_message(Message msg) {
+        mesagesRepo.save(msg);
+        notifyObservers(new AccountEvent(ChangeEvent.ADD_MESSAGE,msg));
+    }
+
+    public List<Message> get_all_user_messages(User user) {
+        List<Message> returnList = new ArrayList<>();
+        for(Message message : mesagesRepo.findAll()){
+            System.out.println("Message retrieved: " + message.getMessage());
+            if(message.getTo().contains(user) || message.getFrom().equals(user))
+                returnList.add(message);
+        }
+        returnList.sort(Comparator.comparing(Message::getDate));
+        return returnList;
     }
 }

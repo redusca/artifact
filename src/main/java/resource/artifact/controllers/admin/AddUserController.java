@@ -31,8 +31,7 @@ public class AddUserController {
     @FXML
     private void AddUserAction(ActionEvent actionEvent){
         try{
-            service.add_user(FirstNameField.getText(),LastNameField.getText(),
-                    PasswordField.getText(),UsernameField.getText());
+            service.add_user(FirstNameField.getText(),LastNameField.getText(),PasswordField.getText(),UsernameField.getText());
             Stage stage = (Stage) stackPane.getScene().getWindow();
             stage.close();
 

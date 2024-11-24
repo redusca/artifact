@@ -7,15 +7,20 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import resource.artifact.controllers.login.UserLoginController;
 import resource.artifact.domains.DataBaseConnectInfo;
+import resource.artifact.domains.Message;
+import resource.artifact.domains.User;
 import resource.artifact.domains.validators.FriendRequestValidator;
 import resource.artifact.domains.validators.FriendshipValidator;
+import resource.artifact.domains.validators.MessageValidator;
 import resource.artifact.domains.validators.UserValidator;
 import resource.artifact.repositories.database.FriendRequestDBRepository;
 import resource.artifact.repositories.database.FriendshipDBRepository;
+import resource.artifact.repositories.database.MessageDBRepository;
 import resource.artifact.repositories.database.UserDBRepository;
 import resource.artifact.services.SocialNetworking;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 public class MainApplication extends Application {
     private SocialNetworking userService;
@@ -36,10 +41,12 @@ public class MainApplication extends Application {
         FriendRequestDBRepository friendRequestDBRepository =new FriendRequestDBRepository(
                 new FriendRequestValidator(userDBRepository),infoConnect,"friendrequests"
         );
-
+        MessageDBRepository messageDBRepository = new MessageDBRepository(
+                new MessageValidator(userDBRepository),infoConnect,"messages",userDBRepository
+        );
+        messageDBRepository.findAll().forEach(System.out::println);
         //Service
-        userService = new SocialNetworking(userDBRepository,friendshipDBRepository,friendRequestDBRepository);
-        userService.get_all_friendrequests_of_user(userDBRepository.findOne(1L).get()).forEach(System.out::println);
+        userService = new SocialNetworking(userDBRepository,friendshipDBRepository,friendRequestDBRepository,messageDBRepository);
         initView(stage);
         stage.setTitle("Login Page");
         stage.show();

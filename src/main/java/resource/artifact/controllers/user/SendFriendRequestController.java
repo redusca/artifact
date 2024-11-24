@@ -12,7 +12,7 @@ import resource.artifact.domains.validators.ValidationException;
 import resource.artifact.services.SocialNetworking;
 import resource.artifact.utils.events.AccountEvent;
 import resource.artifact.utils.events.ChangeEvent;
-import resource.artifact.utils.fx.AlterCreator;
+import resource.artifact.utils.fx.AlertCreator;
 import resource.artifact.utils.observers.Observer;
 
 public class SendFriendRequestController implements Observer<AccountEvent> {
@@ -65,7 +65,7 @@ public class SendFriendRequestController implements Observer<AccountEvent> {
         Callback<TableColumn<User, Void>, TableCell<User, Void>> cellFactory = new Callback<>() {
             @Override
             public TableCell<User, Void> call(final TableColumn<User, Void> param) {
-                final TableCell<User, Void> cell = new TableCell<>() {
+                return new TableCell<>() {
 
                     private final Button btn = new Button("Send");
 
@@ -82,15 +82,15 @@ public class SendFriendRequestController implements Observer<AccountEvent> {
                                     System.out.println(service.send_friendRequest(user.getId().toString(), wantedUser.getId().toString()));
                                     btn.setDisable(true);
                                 } catch (ValidationException e) {
-                                    AlterCreator.create(Alert.AlertType.ERROR, e.getMessage());
+                                    AlertCreator.create(Alert.AlertType.ERROR, e.getMessage());
                                 }
                             });
                             setGraphic(btn);
                         }
                     }
                 };
-                return cell;
             }
+
         };
 
         tableColumnAction.setCellFactory(cellFactory);

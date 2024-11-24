@@ -12,7 +12,7 @@ import resource.artifact.domains.validators.ValidationException;
 import resource.artifact.services.SocialNetworking;
 import resource.artifact.utils.events.AccountEvent;
 import resource.artifact.utils.events.ChangeEvent;
-import resource.artifact.utils.fx.AlterCreator;
+import resource.artifact.utils.fx.AlertCreator;
 import resource.artifact.utils.observers.Observer;
 
 import java.util.Objects;
@@ -39,7 +39,7 @@ public class UserFriendRequests implements Observer<AccountEvent> {
     }
 
     private void updateTable() {
-        service.get_all_friendrequests_of_user(user).forEach(friendRequest ->
+        service.get_all_friend_requests_of_user(user).forEach(friendRequest ->
                 model.add(service.find_user(friendRequest.getSender()).orElse(new User()))
         );
     }
@@ -58,8 +58,9 @@ public class UserFriendRequests implements Observer<AccountEvent> {
 
         Callback<TableColumn<User, Void>, TableCell<User, Void>> cellFactory = new Callback<>() {
             @Override
+
             public TableCell<User, Void> call(final TableColumn<User, Void> param) {
-                final TableCell<User, Void> cell = new TableCell<>() {
+                return new TableCell<>() {
 
                     private final Button btn = new Button(buttonName);
                     {
@@ -74,7 +75,7 @@ public class UserFriendRequests implements Observer<AccountEvent> {
                                 service.del_friendRequest(wantedUser.getId().toString(),user.getId().toString());
 
                             } catch (ValidationException e) {
-                                AlterCreator.create(Alert.AlertType.ERROR, e.getMessage());
+                                AlertCreator.create(Alert.AlertType.ERROR, e.getMessage());
                             }
                         });
                     }
@@ -89,7 +90,6 @@ public class UserFriendRequests implements Observer<AccountEvent> {
                         }
                     }
                 };
-                return cell;
             }
         };
 

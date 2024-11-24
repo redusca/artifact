@@ -1,5 +1,8 @@
 package resource.artifact.domains;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -93,5 +96,19 @@ public class User extends Entity<Long>{
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    private BooleanProperty selected = new SimpleBooleanProperty(false);
+
+    public BooleanProperty selectedProperty() {
+        return selected;
+    }
+
+    public boolean isSelected() {
+        return selected.get();
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected.set(selected);
     }
 }

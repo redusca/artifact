@@ -37,5 +37,8 @@ module resource.artifact {
     opens resource.artifact.controllers.user to javafx.fxml;
     exports resource.artifact.controllers.login;
     opens resource.artifact.controllers.login to javafx.fxml;
+    exports resource.artifact.domains.validators;
+    opens resource.artifact.domains.validators to javafx.fxml;
+
 
 }

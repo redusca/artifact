@@ -16,7 +16,7 @@ import resource.artifact.domains.validators.ValidationException;
 import resource.artifact.services.SocialNetworking;
 import resource.artifact.utils.events.AccountEvent;
 import resource.artifact.utils.events.ChangeEvent;
-import resource.artifact.utils.fx.AlterCreator;
+import resource.artifact.utils.fx.AlertCreator;
 import resource.artifact.utils.fx.SceneSwitch;
 import resource.artifact.utils.observers.Observer;
 
@@ -51,9 +51,9 @@ public class FriendsAdminController implements SceneChangerController, Observer<
 
     @FXML
     public void initialize() {
-        tableFirstUser.setCellValueFactory(new PropertyValueFactory<Friendship,Long>("first"));
-        tableSecondUser.setCellValueFactory(new PropertyValueFactory<Friendship,Long>("last"));
-        tableDate.setCellValueFactory(new PropertyValueFactory<Friendship, String>("fDate"));
+        tableFirstUser.setCellValueFactory(new PropertyValueFactory<>("first"));
+        tableSecondUser.setCellValueFactory(new PropertyValueFactory<>("last"));
+        tableDate.setCellValueFactory(new PropertyValueFactory<>("fDate"));
         tableView.setItems(model);
     }
 
@@ -67,7 +67,7 @@ public class FriendsAdminController implements SceneChangerController, Observer<
             Tuple<Long,Long> idDel = tableView.getSelectionModel().getSelectedItem().getId();
             service.del_friendship(idDel.first().toString(),idDel.last().toString());
         } catch (ValidationException e){
-            AlterCreator.create(Alert.AlertType.ERROR, e.getMessage());
+            AlertCreator.create(Alert.AlertType.ERROR, e.getMessage());
         }
     }
 

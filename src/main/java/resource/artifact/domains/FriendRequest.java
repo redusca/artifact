@@ -3,16 +3,24 @@ package resource.artifact.domains;
 import resource.artifact.utils.DateTimeFormat;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class FriendRequest extends Entity<Tuple<Long,Long>> {
     private Boolean status;
     private final LocalDateTime fDate;
 
+    public FriendRequest(Long elem1, Long elem2,LocalDateTime fDate,Boolean status) {
+        setId(new Tuple<>(elem1, elem2));
+        this.fDate = fDate;
+        this.status = status;
+    }
     public FriendRequest(Long elem1, Long elem2,LocalDateTime fDate) {
         setId(new Tuple<>(elem1, elem2));
         this.fDate = fDate;
         this.status = false;
+    }
+
+    public void setStatus(){
+        this.status = true;
     }
 
     public Long getSender(){

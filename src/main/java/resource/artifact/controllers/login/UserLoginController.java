@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -15,7 +16,7 @@ import resource.artifact.controllers.admin.UsersAdminController;
 import resource.artifact.controllers.user.UserAccController;
 import resource.artifact.domains.User;
 import resource.artifact.services.SocialNetworking;
-import resource.artifact.utils.fx.AlterCreator;
+import resource.artifact.utils.fx.AlertCreator;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -24,6 +25,9 @@ import java.util.Optional;
 public class UserLoginController implements SceneChangerController {
     @FXML
     private TextField usernameField;
+    @FXML
+    private PasswordField passwordField;
+
     private SocialNetworking service;
     @FXML
     private Pane thisPane;
@@ -34,13 +38,15 @@ public class UserLoginController implements SceneChangerController {
     }
 
     @Override
-    public void ChangeScene(ActionEvent actionEvent) throws IOException {
+    public void ChangeScene(ActionEvent actionEvent) {
     }
 
     @FXML
     private void LoginAction(ActionEvent actionEvent) throws  IOException{
         Optional<User> loginUser = service.find_by_Username_User(usernameField.getText());
-        if(loginUser.isPresent()){
+
+
+        if(loginUser.isPresent() && Objects.equals(loginUser.get().getPassword(), passwordField.getText())){
             FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("userAcc-view.fxml"));
             Stage stage = new Stage();
             Pane userLayout = fxmlLoader.load();
@@ -52,17 +58,19 @@ public class UserLoginController implements SceneChangerController {
 
             stage.setTitle(usernameField.getText() + " account");
             stage.show();
-          //stage = (Stage) thisPane.getScene().getWindow();
-          //stage.close();
+
             return;
 
         }
-        if(Objects.equals(usernameField.getText(), "admin")){
+        if(Objects.equals(usernameField.getText(), "admin") && Objects.equals(passwordField.getText(), "admin")){
             LoginActionAdmin();
             return;
         }
 
-        AlterCreator.create(Alert.AlertType.INFORMATION,"Username not found!");
+        usernameField.clear();
+        passwordField.clear();
+
+        AlertCreator.create(Alert.AlertType.INFORMATION,"Username not found!");
     }
 
     private void LoginActionAdmin() throws IOException{
