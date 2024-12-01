@@ -19,22 +19,32 @@ import resource.artifact.domains.Message;
 import resource.artifact.domains.ReplyMessage;
 import resource.artifact.domains.User;
 import resource.artifact.services.SocialNetworking;
+import resource.artifact.utils.CommunityStructureUtils;
 import resource.artifact.utils.events.AccountEvent;
 import resource.artifact.utils.events.ChangeEvent;
 import resource.artifact.utils.fx.AlertCreator;
 import resource.artifact.utils.observers.Observer;
+import resource.artifact.utils.page.Page;
+import resource.artifact.utils.page.Pageable;
 
 import java.io.IOException;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class UserAccController implements Observer<AccountEvent> {
 
+    @FXML
+    private Label pageLabel;
+    @FXML
+    private Button nextButton;
+    @FXML
+    private Button prevButton;
+    @FXML
+    private ComboBox<Integer> numberComboBox;
     @FXML
     private Button notificationsButton;
     @FXML
@@ -63,6 +73,8 @@ public class UserAccController implements Observer<AccountEvent> {
     private Stage sendFriendRequestStage;
     private Stage friendRequestsStage;
     private Stage notificationsStage;
+
+    private int pageNumber =0 , pageSize = 5;
 
     private boolean ChatOpen = false;
 
@@ -95,11 +107,27 @@ public class UserAccController implements Observer<AccountEvent> {
 
         service.get_all_user_messages(user).forEach(this::createMessageBox);
 
+        numberComboBox.setItems(FXCollections.observableArrayList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        numberComboBox.setValue(pageSize);
+        numberComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
+            pageSize = newVal;
+            initModel();
+        });
+
     }
 
     private void initModel() {
-        service.get_all_friends_of_User(user.getId().toString()).forEach(model::add);
-        tableView.setItems(model);
+        Pageable pageable = new Pageable(pageNumber, pageSize);
+        Page<User> userPage = service.get_all_friends_of_User(user.getId().toString(),pageable);
+        List<User> userList = StreamSupport.stream(userPage.getElementsOnPage().spliterator(), false)
+                .collect(Collectors.toList());
+
+        prevButton.setDisable(pageNumber==0);
+        nextButton.setDisable(pageNumber>=(userPage.getTotalNumberOfElements()-1)/pageSize);
+
+        pageLabel.setText("Page "+(pageNumber+1)+" of "+( (userPage.getTotalNumberOfElements()-1)/pageSize +1) );
+
+        model.setAll(userList);
     }
 
     @FXML
@@ -107,12 +135,24 @@ public class UserAccController implements Observer<AccountEvent> {
         tableColumnUsername.setCellValueFactory(new PropertyValueFactory<>("username"));
         tableColumnFirstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         tableColumnLastName.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+        tableView.setItems(model);
 
         tableView.getSelectionModel().setSelectionMode(
                 SelectionMode.MULTIPLE
         );
 
-        tableView.setItems(model);
+        tableView.setRowFactory(tv -> new TableRow<User>() {
+            @Override
+            protected void updateItem(User item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setStyle("");
+                } else {
+                    setStyle("-fx-background-color: " + CommunityStructureUtils.generateColorCode(item.getUsername()) + ";");
+                }
+            }
+        });
+
     }
 
     @FXML
@@ -144,7 +184,7 @@ public class UserAccController implements Observer<AccountEvent> {
     @FXML
     private void sendMessage(ActionEvent actionEvent) {
 
-        if (!ifTextExits()) return;
+        if (!TextExits()) return;
 
         Message msg = new Message(user, messageUsers, chatInput.getText(), LocalDateTime.now());
         service.add_message(msg);
@@ -172,7 +212,7 @@ public class UserAccController implements Observer<AccountEvent> {
 
          HBox messageBox = new HBox();
          messageBox.setStyle("-fx-border-color: black; -fx-padding: 10; " +
-                 "-fx-background-color: " + generateColorCode(msg.getFrom().getUsername()) + ";");
+                 "-fx-background-color: " + CommunityStructureUtils.generateColorCode(msg.getFrom().getUsername()) + ";");
          Label messageLabel = new Label(message);
          messageLabel.setMinWidth(400);
          messageLabel.setMaxWidth(400);
@@ -181,7 +221,7 @@ public class UserAccController implements Observer<AccountEvent> {
          String finalMessage = message;
          Button replyButton = new Button("Reply");
             replyButton.setOnAction(actionEvent -> {
-                if (!ifTextExits()) return;
+                if (!TextExits()) return;
                 ReplyMessage replyMessage = new ReplyMessage(user,messageUsers,chatInput.getText(), LocalDateTime.now(),msg);
                 service.add_message(replyMessage);
             });
@@ -191,7 +231,7 @@ public class UserAccController implements Observer<AccountEvent> {
          chatInput.clear();
     }
 
-    private boolean ifTextExits() {
+    private boolean TextExits() {
         if(chatInput.getText().isEmpty()) {
             AlertCreator.create(Alert.AlertType.INFORMATION, "Please write a message");
             return false;
@@ -205,21 +245,6 @@ public class UserAccController implements Observer<AccountEvent> {
         return true;
     }
 
-    private String generateColorCode(String username) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] digest = md.digest(username.getBytes());
-            BigInteger no = new BigInteger(1, digest);
-            StringBuilder hashText = new StringBuilder(no.toString(16));
-            while (hashText.length() < 32) {
-                hashText.insert(0, "0");
-            }
-            return "#" + hashText.substring(0, 6);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 
     @Override
     public void update(AccountEvent actionEvent) {
@@ -231,7 +256,7 @@ public class UserAccController implements Observer<AccountEvent> {
                 if (foundUser == user)
                     foundUser = service.find_user(actionEvent.getFriendship().getLast()).orElse(new User());
 
-                model.remove(foundUser);
+                initModel();
             }
         }
         if(actionEvent.getEvent()==ChangeEvent.ADD_FRIENDSHIP){
@@ -242,19 +267,21 @@ public class UserAccController implements Observer<AccountEvent> {
                 if (foundUser == user)
                     foundUser = service.find_user(actionEvent.getFriendship().getLast()).orElse(new User());
 
-                model.add(foundUser);
+                initModel();
             }
         }
         if(actionEvent.getEvent()==ChangeEvent.SEND_FRIENDREQUEST){
             service.get_all_friend_requests().stream()
                     .filter(friendRequest -> friendRequest.getReceiver().equals(user.getId()) &&
-                            friendRequest.getSender().equals(actionEvent.getData().getId()))
+                            friendRequest.getSender().equals(actionEvent.getData().getId()) &&
+                            friendRequest.getStatus().equals(false))
                     .forEach(friendRequest ->
                         notificationsButton.setStyle("-fx-background-color: red"));
         }  if(actionEvent.getEvent()==ChangeEvent.REMOVED_FRIENDREQUEST){
             service.get_all_friend_requests().stream()
                     .filter(friendRequest -> friendRequest.getReceiver().equals(user.getId()) &&
-                            friendRequest.getSender().equals(actionEvent.getData().getId()))
+                            friendRequest.getSender().equals(actionEvent.getData().getId()) &&
+                             friendRequest.getStatus().equals(true))
                     .forEach(friendRequest ->
                         notificationsButton.setStyle("-fx-background-color: white"));
         }
@@ -326,5 +353,15 @@ public class UserAccController implements Observer<AccountEvent> {
         } else {
             notificationsStage.toFront();
         }
+    }
+
+    public void prevPage(ActionEvent actionEvent) {
+        pageNumber--;
+        initModel();
+    }
+
+    public void nextPage(ActionEvent actionEvent) {
+        pageNumber++;
+        initModel();
     }
 }

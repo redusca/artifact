@@ -25,6 +25,8 @@ module resource.artifact {
     exports resource.artifact.services to javafx.fxml;
     opens resource.artifact.utils.events;
     exports resource.artifact.utils.events to javafx.fxml;
+    opens resource.artifact.utils.page;
+    exports resource.artifact.utils.page to javafx.fxml;
     opens resource.artifact.repositories.inMemory;
     exports resource.artifact.repositories.inMemory to javafx.fxml;
     opens resource.artifact.utils.observers;
@@ -39,6 +41,6 @@ module resource.artifact {
     opens resource.artifact.controllers.login to javafx.fxml;
     exports resource.artifact.domains.validators;
     opens resource.artifact.domains.validators to javafx.fxml;
-
-
+    exports resource.artifact.repositories.fromdatabase;
+    opens resource.artifact.repositories.fromdatabase to javafx.fxml;
 }

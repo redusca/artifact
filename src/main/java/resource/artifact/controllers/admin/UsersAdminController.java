@@ -17,6 +17,7 @@ import resource.artifact.controllers.SceneChangerController;
 import resource.artifact.domains.User;
 import resource.artifact.domains.validators.ValidationException;
 import resource.artifact.services.SocialNetworking;
+import resource.artifact.utils.CommunityStructureUtils;
 import resource.artifact.utils.fx.AlertCreator;
 import resource.artifact.utils.fx.SceneSwitch;
 import resource.artifact.utils.events.AccountEvent;
@@ -71,6 +72,18 @@ public class UsersAdminController implements SceneChangerController, Observer<Ac
         tableColumnLastName.setCellValueFactory(new PropertyValueFactory<>("lastName"));
         tableView.setItems(model);
 
+    tableView.setRowFactory(tv -> new TableRow<User>() {
+    @Override
+    protected void updateItem(User item, boolean empty) {
+        super.updateItem(item, empty);
+        if (item == null || empty) {
+            setStyle("");
+        } else {
+            setStyle("-fx-background-color: " + CommunityStructureUtils.generateColorCode(item.getUsername()) + ";");
+        }
+    }
+    });
+    
         tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 populateTextFields(newValue);

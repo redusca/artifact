@@ -3,15 +3,21 @@ package resource.artifact.services;
 import resource.artifact.domains.*;
 import resource.artifact.domains.validators.IDfromStringValidator;
 import resource.artifact.domains.validators.ValidationException;
+import resource.artifact.repositories.Repository;
+import resource.artifact.repositories.fromdatabase.UserFDBRepository;
+import resource.artifact.repositories.fromdatabase.UserFilterDTO;
 import resource.artifact.repositories.inMemory.InMemoryRepository;
 import resource.artifact.utils.events.AccountEvent;
 import resource.artifact.utils.events.ChangeEvent;
 import resource.artifact.utils.observers.Observable;
 import resource.artifact.utils.observers.Observer;
+import resource.artifact.utils.page.Page;
+import resource.artifact.utils.page.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static java.lang.Long.max;
 import static java.lang.Long.parseLong;
@@ -19,14 +25,14 @@ import static java.lang.Math.min;
 
 
 public class SocialNetworking implements Observable<AccountEvent>{
-    private final InMemoryRepository<Long, User> usersRepo;
+    private final Repository<Long, User> usersRepo;
     private final InMemoryRepository<Tuple<Long,Long>,Friendship> friendshipsRepo;
     private final IDfromStringValidator iDfromStringValidator;
     private final List<Observer<AccountEvent>> observers=new ArrayList<>();
     private final InMemoryRepository<Tuple<Long, Long>, FriendRequest> friendRequestRepo;
     private final InMemoryRepository<Long, Message> mesagesRepo;
 
-    public SocialNetworking(InMemoryRepository<Long, User> usersRepo, InMemoryRepository<Tuple<Long, Long>, Friendship> friendshipsRepo,
+    public SocialNetworking(Repository<Long, User> usersRepo, InMemoryRepository<Tuple<Long, Long>, Friendship> friendshipsRepo,
     InMemoryRepository<Tuple<Long, Long>, FriendRequest> friendRequestRepo, InMemoryRepository<Long, Message> messagesRepo) {
         this.usersRepo = usersRepo;
         this.friendshipsRepo = friendshipsRepo;
@@ -195,22 +201,27 @@ public class SocialNetworking implements Observable<AccountEvent>{
         return Optional.empty();
     }
 
-    public Iterable<User> get_all_friends_of_User(String id) {
+    public Page<User> get_all_friends_of_User(String id,Pageable pageable) {
         iDfromStringValidator.validate(id);
         Optional<User> user = usersRepo.findOne(parseLong(id));
-        return user.map(u -> u.getFriends().stream()
-                        .map(id_friend -> usersRepo.findOne(id_friend).orElse(new User()))
-                        .collect(Collectors.toList()))
-                .orElseGet(ArrayList::new);
+
+        return findAllOnPage(pageable,new UserFilterDTO(StreamSupport
+                .stream(friendshipsRepo.findAll().spliterator(),false)
+                .filter(friendship -> friendship.getId().first().equals(user.get().getId()) ||
+                        friendship.getId().last().equals(user.get().getId()))
+                .map(friendship -> friendship.getId().first().equals(user.get().getId()) ?
+                        friendship.getId().last() : friendship.getId().first())
+                .collect(Collectors.toList())));
     }
 
-    public List<User> get_non_friend_of_user(User mainUser) {
-        List<User> returnList = new ArrayList<>();
+    public Page<User> get_non_friend_of_user(User mainUser,Pageable pageable,String name) {
+        List<Long> returnList = new ArrayList<>();
         for(User  user: get_all_users()){
-            if(user!=mainUser && !mainUser.getFriends().contains(user.getId()))
-                returnList.add(user);
+            if(user!=mainUser && friendshipsRepo.findOne(new Tuple<>(mainUser.getId(),user.getId())).isEmpty()
+                    && friendshipsRepo.findOne(new Tuple<>(user.getId(),mainUser.getId())).isEmpty())
+                returnList.add(user.getId());
         }
-        return returnList;
+        return findAllOnPage(pageable,new UserFilterDTO(returnList,name));
     }
 
     public boolean send_friendRequest(String id_sender, String id_receiver) {
@@ -277,4 +288,13 @@ public class SocialNetworking implements Observable<AccountEvent>{
         returnList.sort(Comparator.comparing(Message::getDate));
         return returnList;
     }
+
+    public Page<User> findAllOnPage(Pageable pageable, UserFilterDTO movieFilterDTO) {
+        return ((UserFDBRepository)usersRepo).findAllOnPage(pageable,movieFilterDTO);
+    }
+
+    public Page<User> findAllOnPage(Pageable pageable) {
+        return ((UserFDBRepository)usersRepo).findAllOnPage(pageable);
+    }
+
 }

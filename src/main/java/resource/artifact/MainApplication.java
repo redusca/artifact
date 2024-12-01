@@ -17,6 +17,7 @@ import resource.artifact.repositories.database.FriendRequestDBRepository;
 import resource.artifact.repositories.database.FriendshipDBRepository;
 import resource.artifact.repositories.database.MessageDBRepository;
 import resource.artifact.repositories.database.UserDBRepository;
+import resource.artifact.repositories.fromdatabase.UserFDBRepository;
 import resource.artifact.services.SocialNetworking;
 
 import java.io.IOException;
@@ -29,9 +30,8 @@ public class MainApplication extends Application {
     public void start(Stage stage) throws IOException {
         DataBaseConnectInfo infoConnect =new DataBaseConnectInfo("postgres","1231","socialcomunity");
 
-        UserDBRepository userDBRepository = new UserDBRepository(
-                new UserValidator(),infoConnect,
-                "users"
+        UserFDBRepository userDBRepository = new UserFDBRepository(
+                new UserValidator(),infoConnect
         );
 
         FriendshipDBRepository friendshipDBRepository = new FriendshipDBRepository(

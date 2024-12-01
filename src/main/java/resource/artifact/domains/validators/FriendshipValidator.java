@@ -2,13 +2,14 @@ package resource.artifact.domains.validators;
 
 import resource.artifact.domains.Friendship;
 import resource.artifact.domains.User;
+import resource.artifact.repositories.Repository;
 import resource.artifact.repositories.inMemory.InMemoryRepository;
 
 public class FriendshipValidator implements Validator<Friendship> {
 
-    private final InMemoryRepository<Long, User> repository;
+    private final Repository<Long, User> repository;
 
-    public FriendshipValidator(InMemoryRepository<Long, User> repository) {
+    public FriendshipValidator(Repository<Long, User> repository) {
         this.repository = repository;
     }
 

@@ -2,13 +2,13 @@ package resource.artifact.domains.validators;
 
 import resource.artifact.domains.FriendRequest;
 import resource.artifact.domains.User;
-import resource.artifact.repositories.inMemory.InMemoryRepository;
+import resource.artifact.repositories.Repository;
 
 public class FriendRequestValidator implements Validator<FriendRequest> {
 
-    private final InMemoryRepository<Long, User> repository;
+    private final Repository<Long, User> repository;
 
-    public FriendRequestValidator(InMemoryRepository<Long, User> repository) {
+    public FriendRequestValidator(Repository<Long, User> repository) {
         this.repository = repository;
     }
     @Override

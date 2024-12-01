@@ -4,10 +4,10 @@ import resource.artifact.domains.ConexComponents;
 import resource.artifact.domains.User;
 import resource.artifact.repositories.Repository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class CommunityStructureUtils {
@@ -44,5 +44,20 @@ public class CommunityStructureUtils {
         });
 
         return mostSC.get();
+    }
+
+    public static String generateColorCode(String username) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] digest = md.digest(username.getBytes());
+            BigInteger no = new BigInteger(1, digest);
+            StringBuilder hashText = new StringBuilder(no.toString(16));
+            while (hashText.length() < 32) {
+                hashText.insert(0, "0");
+            }
+            return "#" + hashText.substring(0, 6);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

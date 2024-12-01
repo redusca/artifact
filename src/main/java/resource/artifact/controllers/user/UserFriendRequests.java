@@ -10,6 +10,7 @@ import javafx.util.Callback;
 import resource.artifact.domains.User;
 import resource.artifact.domains.validators.ValidationException;
 import resource.artifact.services.SocialNetworking;
+import resource.artifact.utils.CommunityStructureUtils;
 import resource.artifact.utils.events.AccountEvent;
 import resource.artifact.utils.events.ChangeEvent;
 import resource.artifact.utils.fx.AlertCreator;
@@ -51,6 +52,18 @@ public class UserFriendRequests implements Observer<AccountEvent> {
         tableView.setItems(model);
         addButtonToTable("Accept_Friend","Accept");
         addButtonToTable("Decline_Friend","Decline");
+
+        tableView.setRowFactory(tv -> new TableRow<User>() {
+            @Override
+            protected void updateItem(User item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setStyle("");
+                } else {
+                    setStyle("-fx-background-color: " + CommunityStructureUtils.generateColorCode(item.getUsername()) + ";");
+                }
+            }
+        });
     }
 
     private void addButtonToTable(String columnName,String buttonName) {

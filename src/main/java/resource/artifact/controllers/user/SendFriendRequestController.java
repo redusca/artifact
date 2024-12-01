@@ -9,11 +9,19 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
 import resource.artifact.domains.User;
 import resource.artifact.domains.validators.ValidationException;
+import resource.artifact.repositories.fromdatabase.UserFilterDTO;
 import resource.artifact.services.SocialNetworking;
+import resource.artifact.utils.CommunityStructureUtils;
 import resource.artifact.utils.events.AccountEvent;
 import resource.artifact.utils.events.ChangeEvent;
 import resource.artifact.utils.fx.AlertCreator;
 import resource.artifact.utils.observers.Observer;
+import resource.artifact.utils.page.Page;
+import resource.artifact.utils.page.Pageable;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class SendFriendRequestController implements Observer<AccountEvent> {
     @FXML
@@ -28,13 +36,34 @@ public class SendFriendRequestController implements Observer<AccountEvent> {
     private TextField searchField;
     private SocialNetworking service;
     private User user;
+    private int pageNumber=0;
+
+    @FXML
+    private Label pageLabel;
+    @FXML
+    private Button nextButton;
+    @FXML
+    private Button prevButton;
 
     ObservableList<User> model = FXCollections.observableArrayList();
 
     public void setService(SocialNetworking service) {
-        this.service =service;
+        this.service = service;
         service.addObserver(this);
-        model.addAll(service.get_non_friend_of_user(user));
+        initModel("");
+    }
+
+    private void initModel(String name) {
+        Page<User> page = service.get_non_friend_of_user(user, new Pageable(pageNumber,10),name);
+        List<User> userList = StreamSupport.stream(page.getElementsOnPage().spliterator(), false)
+                .collect(Collectors.toList());
+
+        prevButton.setDisable(pageNumber==0);
+        nextButton.setDisable(pageNumber>=(page.getTotalNumberOfElements()-1)/ 10);
+
+        pageLabel.setText("Page "+(pageNumber+1)+" of "+( (page.getTotalNumberOfElements()-1)/ 10 +1) );
+
+        model.setAll(userList);
     }
 
     public void setUser(User user) {
@@ -50,14 +79,22 @@ public class SendFriendRequestController implements Observer<AccountEvent> {
         tableView.setItems(model);
         addButtonToTable();
 
-        searchField.textProperty().addListener((observable, oldValue, newValue) -> findByNameUser(newValue));
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> initModel(searchField.getText()));
+
+        tableView.setRowFactory(tv -> new TableRow<>() {
+            @Override
+            protected void updateItem(User item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setStyle("");
+                } else {
+                    setStyle("-fx-background-color: " + CommunityStructureUtils.generateColorCode(item.getUsername()) + ";");
+                }
+            }
+        });
 
     }
 
-    private void findByNameUser(String newValue) {
-        model.clear();
-        service.get_non_friend_of_user(user).stream().filter(user -> user.toString().contains(newValue)).forEach(model::add);
-    }
 
     private void addButtonToTable() {
         TableColumn<User, Void> tableColumnAction = new TableColumn<>("Friend Request");
@@ -104,6 +141,16 @@ public class SendFriendRequestController implements Observer<AccountEvent> {
                actionEvent.getEvent() == ChangeEvent.REMOVED_FRIENDSHIP ||
                actionEvent.getEvent() == ChangeEvent.REMOVED_FRIENDREQUEST
             )
-               findByNameUser(searchField.getText());
+               initModel(searchField.getText());
+    }
+
+    public void prevPage(ActionEvent actionEvent) {
+        pageNumber--;
+        initModel(searchField.getText());
+    }
+
+    public void nextPage(ActionEvent actionEvent) {
+        pageNumber++;
+        initModel(searchField.getText());
     }
 }

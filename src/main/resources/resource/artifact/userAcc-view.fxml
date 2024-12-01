@@ -31,6 +31,13 @@
             <Button text="Delete Friendship" onAction="#deleteFriendship"/>
             <Button text="Show Friend Requests" onAction="#showFriendRequests"/>
         </HBox>
+        <HBox spacing="20.0">
+            <Label text="Users on Page"/>
+            <ComboBox fx:id="numberComboBox"/>
+            <Button fx:id="prevButton" text="Previous" onAction="#prevPage"/>
+            <Button fx:id="nextButton" text="Next" onAction="#nextPage"/>
+            <Label fx:id="pageLabel"/>
+        </HBox>
     </VBox>
     <VBox fx:id="chatBox" spacing="10.0" alignment="BOTTOM_RIGHT"
           AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0" AnchorPane.bottomAnchor="20.0" visible="false" prefWidth="0">

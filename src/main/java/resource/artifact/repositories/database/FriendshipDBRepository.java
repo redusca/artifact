@@ -5,7 +5,7 @@ import resource.artifact.domains.Friendship;
 import resource.artifact.domains.Tuple;
 import resource.artifact.domains.User;
 import resource.artifact.domains.validators.Validator;
-import resource.artifact.repositories.inMemory.InMemoryRepository;
+import resource.artifact.repositories.Repository;
 import resource.artifact.utils.DateTimeFormat;
 
 import java.sql.ResultSet;
@@ -14,9 +14,9 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 public class FriendshipDBRepository extends AbstractDataBaseRepository<Tuple<Long,Long>, Friendship>{
-    private final InMemoryRepository<Long, User> usersRepo;
+    private final Repository<Long, User> usersRepo;
 
-    public FriendshipDBRepository(InMemoryRepository<Long, User> usersRepo,Validator<Friendship> validator,
+    public FriendshipDBRepository(Repository<Long, User> usersRepo,Validator<Friendship> validator,
                                   DataBaseConnectInfo connectInfo, String tableName) {
         super(validator, connectInfo, tableName);
         this.usersRepo=usersRepo;
