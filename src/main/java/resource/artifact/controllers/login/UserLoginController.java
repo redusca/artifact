@@ -16,6 +16,7 @@ import resource.artifact.controllers.admin.UsersAdminController;
 import resource.artifact.controllers.user.UserAccController;
 import resource.artifact.domains.User;
 import resource.artifact.services.SocialNetworking;
+import resource.artifact.utils.Encryption;
 import resource.artifact.utils.fx.AlertCreator;
 
 import java.io.IOException;
@@ -44,9 +45,9 @@ public class UserLoginController implements SceneChangerController {
     @FXML
     private void LoginAction(ActionEvent actionEvent) throws  IOException{
         Optional<User> loginUser = service.find_by_Username_User(usernameField.getText());
+        String passEncryption = Encryption.code(passwordField.getText());
 
-
-        if(loginUser.isPresent() && Objects.equals(loginUser.get().getPassword(), passwordField.getText())){
+        if(loginUser.isPresent() && Objects.equals(loginUser.get().getPassword(), passEncryption)){
             FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("userAcc-view.fxml"));
             Stage stage = new Stage();
             Pane userLayout = fxmlLoader.load();

@@ -5,3 +5,5 @@ public class Main {
         MainApplication.main(args);
     }
 }
+
+//C:/Users/redis/Desktop/Faculta/sem3/MAP/TemaLab/build/resources/main/resource/artifact/images/andrei.jpg

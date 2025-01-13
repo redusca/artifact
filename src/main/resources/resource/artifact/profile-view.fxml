@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="resource.artifact.controllers.admin.ProfileController"
+            stylesheets="@css/profile-view.css"
+            prefWidth="400" prefHeight="300">
+    <HBox spacing="10.0" alignment= "CENTER" AnchorPane.topAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.bottomAnchor="20.0">
+    <VBox spacing="10.0" alignment="CENTER">
+        <Label text="User Data"/>
+        <Label fx:id="usernameLabel"/>
+        <Label fx:id="firstNameLabel"/>
+        <Label fx:id="lastNameLabel"/>
+        <Label fx:id="friendsCountLabel" text="Number of Friends: 0"/>
+    </VBox>
+
+        <VBox spacing="10.0" alignment="CENTER">
+            <ImageView fx:id="profileImageView" fitWidth="100" fitHeight="100"/>
+            <Button text="Upload Image" onAction="#uploadImage"/>
+            <Button fx:id="changeUsernameButton" text="Change Username" onAction="#openChangeUsernameBox" visible="false"/>
+            <TextField fx:id="newUsernameField" promptText="Enter new username" visible="false"/>
+            <Button fx:id="saveUsernameButton" text="Save" onAction="#saveUsername" visible="false"/>
+        </VBox>
+
+
+    </HBox>
+</AnchorPane>

@@ -15,6 +15,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import resource.artifact.MainApplication;
+import resource.artifact.controllers.admin.ProfileController;
 import resource.artifact.domains.Message;
 import resource.artifact.domains.ReplyMessage;
 import resource.artifact.domains.User;
@@ -363,5 +364,20 @@ public class UserAccController implements Observer<AccountEvent> {
     public void nextPage(ActionEvent actionEvent) {
         pageNumber++;
         initModel();
+    }
+
+    public void openUserDataWindow(ActionEvent actionEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("profile-view.fxml"));
+        Stage stage = new Stage();
+        Pane userLayout = fxmlLoader.load();
+        stage.setScene(new Scene(userLayout));
+
+        ProfileController profileController = fxmlLoader.getController();
+        profileController.setUser(user);
+        profileController.setCurrUser(user);
+        profileController.setService(service);
+
+        stage.setTitle("Profile");
+        stage.show();
     }
 }

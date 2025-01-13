@@ -19,6 +19,7 @@ import resource.artifact.repositories.database.MessageDBRepository;
 import resource.artifact.repositories.database.UserDBRepository;
 import resource.artifact.repositories.fromdatabase.UserFDBRepository;
 import resource.artifact.services.SocialNetworking;
+import resource.artifact.utils.Encryption;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
